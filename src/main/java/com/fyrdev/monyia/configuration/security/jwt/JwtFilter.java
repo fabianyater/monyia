@@ -37,7 +37,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String token = authorizationHeader.replace(PREFIX, EMTPY_STRING);
 
         try {
-            if (jwtUtils.isTokenValid(token)) {
+            if (!jwtUtils.isTokenValid(token)) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, INVALID_TOKEN);
             }
 
