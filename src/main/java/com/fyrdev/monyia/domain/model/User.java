@@ -2,11 +2,14 @@ package com.fyrdev.monyia.domain.model;
 
 public class User {
     private Long id;
+    private String uuid;
     private String name;
     private String email;
     private String password;
 
-    public User(String name, String email, String password) {
+    public User(Long id, String uuid, String name, String email, String password) {
+        this.id = id;
+        this.uuid = uuid;
         this.name = name;
         this.email = email;
         this.password = password;
@@ -18,6 +21,14 @@ public class User {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public String getName() {
