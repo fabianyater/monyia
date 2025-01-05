@@ -1,16 +1,22 @@
 package com.fyrdev.monyia.configuration;
 
 import com.fyrdev.monyia.adapters.driven.jpa.adapter.AuthenticationAdapter;
+import com.fyrdev.monyia.adapters.driven.jpa.adapter.CategoryAdapter;
 import com.fyrdev.monyia.adapters.driven.jpa.adapter.EncryptionAdapter;
 import com.fyrdev.monyia.adapters.driven.jpa.adapter.UserAdapter;
+import com.fyrdev.monyia.adapters.driven.jpa.mapper.ICategoryEntityMapper;
 import com.fyrdev.monyia.adapters.driven.jpa.mapper.IUserEntityMapper;
+import com.fyrdev.monyia.adapters.driven.jpa.repository.ICategoryRepository;
 import com.fyrdev.monyia.adapters.driven.jpa.repository.IUserRepository;
 import com.fyrdev.monyia.configuration.security.jwt.JwtUtils;
 import com.fyrdev.monyia.domain.api.IAuthenticationServicePort;
+import com.fyrdev.monyia.domain.api.ICategoryServicePort;
 import com.fyrdev.monyia.domain.api.IUserServicePort;
 import com.fyrdev.monyia.domain.api.usecase.AuthenticationUseCase;
+import com.fyrdev.monyia.domain.api.usecase.CategoryUseCase;
 import com.fyrdev.monyia.domain.api.usecase.UserUseCase;
 import com.fyrdev.monyia.domain.spi.IAuthenticationPort;
+import com.fyrdev.monyia.domain.spi.ICategoryPersistencePort;
 import com.fyrdev.monyia.domain.spi.IEncryptionPort;
 import com.fyrdev.monyia.domain.spi.IUserPersistencePort;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +30,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class BeanConfiguration {
     private final IUserRepository userRepository;
     private final IUserEntityMapper userEntityMapper;
+    private final ICategoryRepository categoryRepository;
+    private final ICategoryEntityMapper categoryEntityMapper;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final BCryptPasswordEncoder passwordEncoder;
@@ -51,5 +59,15 @@ public class BeanConfiguration {
     @Bean
     public IUserServicePort userServicePort() {
         return new UserUseCase(userPersistencePort(), encryptionPort());
+    }
+
+    @Bean
+    public ICategoryPersistencePort categoryPersistencePort() {
+        return new CategoryAdapter(categoryRepository, categoryEntityMapper);
+    }
+
+    @Bean
+    public ICategoryServicePort categoryServicePort() {
+        return new CategoryUseCase(categoryPersistencePort());
     }
 }
