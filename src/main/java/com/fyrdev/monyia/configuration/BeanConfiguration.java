@@ -3,21 +3,27 @@ package com.fyrdev.monyia.configuration;
 import com.fyrdev.monyia.adapters.driven.jpa.adapter.AuthenticationAdapter;
 import com.fyrdev.monyia.adapters.driven.jpa.adapter.CategoryAdapter;
 import com.fyrdev.monyia.adapters.driven.jpa.adapter.EncryptionAdapter;
+import com.fyrdev.monyia.adapters.driven.jpa.adapter.PocketAdapter;
 import com.fyrdev.monyia.adapters.driven.jpa.adapter.UserAdapter;
 import com.fyrdev.monyia.adapters.driven.jpa.mapper.ICategoryEntityMapper;
+import com.fyrdev.monyia.adapters.driven.jpa.mapper.IPocketEntityMapper;
 import com.fyrdev.monyia.adapters.driven.jpa.mapper.IUserEntityMapper;
 import com.fyrdev.monyia.adapters.driven.jpa.repository.ICategoryRepository;
+import com.fyrdev.monyia.adapters.driven.jpa.repository.IPocketRepository;
 import com.fyrdev.monyia.adapters.driven.jpa.repository.IUserRepository;
 import com.fyrdev.monyia.configuration.security.jwt.JwtUtils;
 import com.fyrdev.monyia.domain.api.IAuthenticationServicePort;
 import com.fyrdev.monyia.domain.api.ICategoryServicePort;
+import com.fyrdev.monyia.domain.api.IPocketServicePort;
 import com.fyrdev.monyia.domain.api.IUserServicePort;
 import com.fyrdev.monyia.domain.api.usecase.AuthenticationUseCase;
 import com.fyrdev.monyia.domain.api.usecase.CategoryUseCase;
+import com.fyrdev.monyia.domain.api.usecase.PocketUseCase;
 import com.fyrdev.monyia.domain.api.usecase.UserUseCase;
 import com.fyrdev.monyia.domain.spi.IAuthenticationPort;
 import com.fyrdev.monyia.domain.spi.ICategoryPersistencePort;
 import com.fyrdev.monyia.domain.spi.IEncryptionPort;
+import com.fyrdev.monyia.domain.spi.IPocketPersistencePort;
 import com.fyrdev.monyia.domain.spi.IUserPersistencePort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -32,6 +38,8 @@ public class BeanConfiguration {
     private final IUserEntityMapper userEntityMapper;
     private final ICategoryRepository categoryRepository;
     private final ICategoryEntityMapper categoryEntityMapper;
+    private final IPocketRepository pocketRepository;
+    private final IPocketEntityMapper pocketEntityMapper;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final BCryptPasswordEncoder passwordEncoder;
@@ -69,5 +77,15 @@ public class BeanConfiguration {
     @Bean
     public ICategoryServicePort categoryServicePort() {
         return new CategoryUseCase(categoryPersistencePort(), authenticationPort());
+    }
+
+    @Bean
+    public IPocketPersistencePort pocketPersistencePort() {
+        return new PocketAdapter(pocketRepository, pocketEntityMapper);
+    }
+
+    @Bean
+    public IPocketServicePort pocketServicePort() {
+        return new PocketUseCase(pocketPersistencePort(), authenticationPort());
     }
 }
