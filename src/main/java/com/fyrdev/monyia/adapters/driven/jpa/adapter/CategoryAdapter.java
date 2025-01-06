@@ -30,4 +30,11 @@ public class CategoryAdapter implements ICategoryPersistencePort {
     public boolean isCategoryExists(Long categoryId) {
         return categoryRepository.existsById(categoryId);
     }
+
+    @Override
+    public Category getCategoryById(Long categoryId) {
+        return categoryRepository.findById(categoryId)
+                .map(categoryEntityMapper::toCategory)
+                .orElse(null);
+    }
 }
