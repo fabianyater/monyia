@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @RequiredArgsConstructor
 public class AuthenticationAdapter implements IAuthenticationPort {
@@ -35,6 +36,13 @@ public class AuthenticationAdapter implements IAuthenticationPort {
     @Override
     public String generateToken(User user) {
         return jwtUtils.generateToken(user);
+    }
+
+    @Override
+    public Long getAuthenticatedUserId() {
+        String userId = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+
+        return Long.valueOf(userId);
     }
 
     private Authentication performAuthentication(String email, String password) {
