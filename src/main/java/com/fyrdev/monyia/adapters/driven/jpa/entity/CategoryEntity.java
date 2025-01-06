@@ -28,7 +28,7 @@ public class CategoryEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "emoji", nullable = false)
+    @Column(name = "emoji")
     private String emoji;
 
     @ManyToOne
