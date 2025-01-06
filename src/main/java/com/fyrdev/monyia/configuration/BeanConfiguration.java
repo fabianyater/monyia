@@ -68,6 +68,6 @@ public class BeanConfiguration {
 
     @Bean
     public ICategoryServicePort categoryServicePort() {
-        return new CategoryUseCase(categoryPersistencePort());
+        return new CategoryUseCase(categoryPersistencePort(), authenticationPort());
     }
 }
