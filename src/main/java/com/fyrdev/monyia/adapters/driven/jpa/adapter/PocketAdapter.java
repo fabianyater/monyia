@@ -17,8 +17,8 @@ public class PocketAdapter implements IPocketPersistencePort {
     }
 
     @Override
-    public Pocket getPocketById(Long pocketId) {
-        return pocketRepository.findById(pocketId)
+    public Pocket getPocketByIdAndUserId(Long pocketId, Long userId) {
+        return pocketRepository.findByIdAndUserEntity_Id(pocketId, userId)
                 .map(pocketEntityMapper::toPocket)
                 .orElse(null);
     }
