@@ -15,4 +15,16 @@ public class PocketAdapter implements IPocketPersistencePort {
     public void saveNewPocket(Pocket pocket) {
         pocketRepository.save(pocketEntityMapper.toEntity(pocket));
     }
+
+    @Override
+    public Pocket getPocketById(Long pocketId) {
+        return pocketRepository.findById(pocketId)
+                .map(pocketEntityMapper::toPocket)
+                .orElse(null);
+    }
+
+    @Override
+    public int updateBalanceById(Long balance, Long pocketId) {
+        return pocketRepository.updateBalanceById(balance, pocketId);
+    }
 }

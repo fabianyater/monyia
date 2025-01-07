@@ -2,6 +2,13 @@ package com.fyrdev.monyia.adapters.driven.jpa.repository;
 
 import com.fyrdev.monyia.adapters.driven.jpa.entity.PocketEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface IPocketRepository extends JpaRepository<PocketEntity, Long> {
+    @Transactional
+    @Modifying
+    @Query("update PocketEntity p set p.balance = ?1 where p.id = ?2")
+    int updateBalanceById(Long balance, Long id);
 }
