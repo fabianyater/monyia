@@ -12,4 +12,6 @@ import org.mapstruct.ReportingPolicy;
 public interface IPocketEntityMapper {
     @Mapping(target = "userEntity.id", source = "userId")
     PocketEntity toEntity(Pocket pocket);
+
+    Pocket toPocket(PocketEntity pocketEntity);
 }
