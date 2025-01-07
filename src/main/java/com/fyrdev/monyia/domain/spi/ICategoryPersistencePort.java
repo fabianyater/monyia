@@ -8,5 +8,5 @@ public interface ICategoryPersistencePort {
     void saveNewCategory(Category category);
     List<Category> getAllCategories(Long userId);
     boolean isCategoryExists(Long categoryId);
-    Category getCategoryById(Long categoryId);
+    Category getCategoryByIdAndUser(Long categoryId, Long userId);
 }

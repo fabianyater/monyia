@@ -104,6 +104,11 @@ public class BeanConfiguration {
 
     @Bean
     public ITransactionServicePort transactionServicePort() {
-        return new TransactionUseCase(transactionPersistencePort(), categoryPersistencePort(), pocketPersistencePort());
+        return new TransactionUseCase(
+                transactionPersistencePort(),
+                categoryPersistencePort(),
+                pocketPersistencePort(),
+                authenticationPort())
+                ;
     }
 }

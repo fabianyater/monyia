@@ -32,8 +32,8 @@ public class CategoryAdapter implements ICategoryPersistencePort {
     }
 
     @Override
-    public Category getCategoryById(Long categoryId) {
-        return categoryRepository.findById(categoryId)
+    public Category getCategoryByIdAndUser(Long categoryId, Long userId) {
+        return categoryRepository.findByIdAndUserEntity_Id(categoryId, userId)
                 .map(categoryEntityMapper::toCategory)
                 .orElse(null);
     }
