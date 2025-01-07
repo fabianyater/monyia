@@ -6,6 +6,7 @@ import com.fyrdev.monyia.domain.model.Category;
 import com.fyrdev.monyia.domain.model.Pocket;
 import com.fyrdev.monyia.domain.model.Transaction;
 import com.fyrdev.monyia.domain.model.enums.TransactionType;
+import com.fyrdev.monyia.domain.spi.IAuthenticationPort;
 import com.fyrdev.monyia.domain.spi.ICategoryPersistencePort;
 import com.fyrdev.monyia.domain.spi.IPocketPersistencePort;
 import com.fyrdev.monyia.domain.spi.ITransactionPersistencePort;
@@ -18,27 +19,32 @@ public class TransactionUseCase implements ITransactionServicePort {
     private final ITransactionPersistencePort transactionPersistencePort;
     private final ICategoryPersistencePort categoryPersistencePort;
     private final IPocketPersistencePort pocketPersistencePort;
+    private final IAuthenticationPort authenticationPort;
 
     public TransactionUseCase(ITransactionPersistencePort transactionPersistencePort,
                               ICategoryPersistencePort categoryPersistencePort,
-                              IPocketPersistencePort pocketPersistencePort) {
+                              IPocketPersistencePort pocketPersistencePort,
+                              IAuthenticationPort authenticationPort) {
         this.transactionPersistencePort = transactionPersistencePort;
         this.categoryPersistencePort = categoryPersistencePort;
         this.pocketPersistencePort = pocketPersistencePort;
+        this.authenticationPort = authenticationPort;
     }
 
     @Override
     public void saveNewTransaction(Transaction transaction) {
-        Category category = categoryPersistencePort.getCategoryById(transaction.getCategoryId());
+        Long userId = authenticationPort.getAuthenticatedUserId();
+        Category category = categoryPersistencePort.getCategoryByIdAndUser(transaction.getCategoryId(), userId);
+
+        if (category == null) {
+            throw new CategoryNotFoundException(DomainConstants.CATEGORY_NOT_FOUND_MESSAGE);
+        }
+
         Pocket pocket = pocketPersistencePort.getPocketById(transaction.getPocketId());
         TransactionType type = transaction.getTransactionType();
 
         if (transaction.getUuid() == null) {
             transaction.setUuid(UUID.randomUUID());
-        }
-
-        if (category == null) {
-            throw new CategoryNotFoundException(DomainConstants.CATEGORY_NOT_FOUND_MESSAGE);
         }
 
         transaction.setCategoryId(category.getId());
