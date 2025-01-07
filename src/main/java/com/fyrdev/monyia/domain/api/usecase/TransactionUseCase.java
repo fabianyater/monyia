@@ -2,6 +2,7 @@ package com.fyrdev.monyia.domain.api.usecase;
 
 import com.fyrdev.monyia.domain.api.ITransactionServicePort;
 import com.fyrdev.monyia.domain.exception.CategoryNotFoundException;
+import com.fyrdev.monyia.domain.exception.PocketNotFoundExceptiont;
 import com.fyrdev.monyia.domain.model.Category;
 import com.fyrdev.monyia.domain.model.Pocket;
 import com.fyrdev.monyia.domain.model.Transaction;
@@ -40,7 +41,12 @@ public class TransactionUseCase implements ITransactionServicePort {
             throw new CategoryNotFoundException(DomainConstants.CATEGORY_NOT_FOUND_MESSAGE);
         }
 
-        Pocket pocket = pocketPersistencePort.getPocketById(transaction.getPocketId());
+        Pocket pocket = pocketPersistencePort.getPocketByIdAndUserId(transaction.getPocketId(), userId);
+
+        if (pocket == null) {
+            throw new PocketNotFoundExceptiont(DomainConstants.POCKET_NOT_FOUND_MESSAGE);
+        }
+
         TransactionType type = transaction.getTransactionType();
 
         if (transaction.getUuid() == null) {

@@ -4,6 +4,6 @@ import com.fyrdev.monyia.domain.model.Pocket;
 
 public interface IPocketPersistencePort {
     void saveNewPocket(Pocket pocket);
-    Pocket getPocketById(Long pocketId);
+    Pocket getPocketByIdAndUserId(Long pocketId, Long userId);
     int updateBalanceById(Long balance, Long pocketId);
 }
