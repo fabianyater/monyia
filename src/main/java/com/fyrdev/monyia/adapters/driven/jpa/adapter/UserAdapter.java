@@ -1,5 +1,6 @@
 package com.fyrdev.monyia.adapters.driven.jpa.adapter;
 
+import com.fyrdev.monyia.adapters.driven.jpa.entity.UserEntity;
 import com.fyrdev.monyia.adapters.driven.jpa.mapper.IUserEntityMapper;
 import com.fyrdev.monyia.adapters.driven.jpa.repository.IUserRepository;
 import com.fyrdev.monyia.domain.model.User;
@@ -12,8 +13,13 @@ public class UserAdapter implements IUserPersistencePort {
     private final IUserEntityMapper userEntityMapper;
 
     @Override
-    public void saveNewUser(User user) {
-        userRepository.save(userEntityMapper.toEntity(user));
+    public User saveNewUser(User user) {
+        UserEntity userEntity = userEntityMapper.toEntity(user);
+        userRepository.save(userEntity);
+
+        user = userEntityMapper.toModel(userEntity);
+
+        return user;
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.fyrdev.monyia.domain.api.usecase;
 
 import com.fyrdev.monyia.domain.api.IUserServicePort;
-import com.fyrdev.monyia.domain.exception.EmailAlreadyExistsException;
+import com.fyrdev.monyia.domain.exception.AlreadyExistsException;
 import com.fyrdev.monyia.domain.model.User;
 import com.fyrdev.monyia.domain.spi.IEncryptionPort;
 import com.fyrdev.monyia.domain.spi.IUserPersistencePort;
@@ -20,9 +20,9 @@ public class UserUseCase implements IUserServicePort {
     }
 
     @Override
-    public void saveNewUser(User user) {
+    public User saveNewUser(User user) {
         if (userPersistencePort.isEmailExists(user.getEmail())) {
-            throw new EmailAlreadyExistsException(DomainConstants.EMAIL_ALREADY_EXISTS_MESSAGE);
+            throw new AlreadyExistsException(DomainConstants.EMAIL_ALREADY_EXISTS_MESSAGE);
         }
 
         if (user.getUuid() == null) {
@@ -31,6 +31,6 @@ public class UserUseCase implements IUserServicePort {
 
         user.setPassword(encryptionPort.encode(user.getPassword()));
 
-        userPersistencePort.saveNewUser(user);
+        return userPersistencePort.saveNewUser(user);
     }
 }
