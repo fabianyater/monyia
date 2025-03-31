@@ -1,6 +1,7 @@
 package com.fyrdev.monyia.adapters.driving.http.controller;
 
 import com.fyrdev.monyia.adapters.driving.http.dto.request.UserRequest;
+import com.fyrdev.monyia.adapters.driving.http.dto.response.UserResponse;
 import com.fyrdev.monyia.adapters.driving.http.mapper.IUserRequestMapper;
 import com.fyrdev.monyia.configuration.exceptionhandler.ApiResponse;
 import com.fyrdev.monyia.domain.api.IUserServicePort;
@@ -10,10 +11,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -46,5 +45,21 @@ public class UserController {
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/{userId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<UserResponse>> getUser(@Valid @PathVariable("userId") Long userId, HttpServletRequest request) {
+        User user = userServicePort.getUserById(userId);
+
+        ApiResponse<UserResponse> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                null,
+                new UserResponse(user.getName(), user.getEmail(), user.getColor()),
+                request.getRequestURI() + user.getId(),
+                System.currentTimeMillis()
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

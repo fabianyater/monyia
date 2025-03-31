@@ -3,8 +3,11 @@ package com.fyrdev.monyia.adapters.driven.jpa.adapter;
 import com.fyrdev.monyia.adapters.driven.jpa.mapper.IPocketEntityMapper;
 import com.fyrdev.monyia.adapters.driven.jpa.repository.IPocketRepository;
 import com.fyrdev.monyia.domain.model.Pocket;
+import com.fyrdev.monyia.domain.model.enums.TransactionType;
 import com.fyrdev.monyia.domain.spi.IPocketPersistencePort;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 public class PocketAdapter implements IPocketPersistencePort {
@@ -17,10 +20,23 @@ public class PocketAdapter implements IPocketPersistencePort {
     }
 
     @Override
+    public List<Pocket> getPocketsByUserId(Long userId) {
+        return pocketRepository.findByUserEntity_Id(userId)
+                .stream()
+                .map(pocketEntityMapper::toPocket)
+                .toList();
+    }
+
+    @Override
     public Pocket getPocketByIdAndUserId(Long pocketId, Long userId) {
         return pocketRepository.findByIdAndUserEntity_Id(pocketId, userId)
                 .map(pocketEntityMapper::toPocket)
                 .orElse(null);
+    }
+
+    @Override
+    public Double getTotalBalanceByTransactionType(Long pocketId, TransactionType transactionType) {
+        return 0.0;
     }
 
     @Override

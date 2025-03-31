@@ -35,6 +35,9 @@ public class PocketEntity {
     @Column(nullable = false)
     private LocalDateTime date;
 
+    @Column(nullable = false)
+    private String emoji;
+
     @ManyToOne
     @JoinColumn(name = "user_entity_id")
     private UserEntity userEntity;

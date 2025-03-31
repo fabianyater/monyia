@@ -5,13 +5,18 @@ public class User {
     private String uuid;
     private String name;
     private String email;
+    private String color;
     private String password;
 
-    public User(Long id, String uuid, String name, String email, String password) {
+    public User() {
+    }
+
+    public User(Long id, String uuid, String name, String email, String color, String password) {
         this.id = id;
         this.uuid = uuid;
         this.name = name;
         this.email = email;
+        this.color = color;
         this.password = password;
     }
 
@@ -45,6 +50,14 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 
     public String getPassword() {

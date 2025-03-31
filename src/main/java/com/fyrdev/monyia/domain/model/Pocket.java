@@ -10,17 +10,19 @@ public class Pocket {
     private String name;
     private BigDecimal balance;
     private LocalDateTime date;
+    private String emoji;
     private Long userId;
 
     public Pocket() {
     }
 
-    public Pocket(Long id, UUID uuid, String name, BigDecimal balance, LocalDateTime date, Long userId) {
+    public Pocket(Long id, UUID uuid, String name, BigDecimal balance, LocalDateTime date, String emoji, Long userId) {
         this.id = id;
         this.uuid = uuid;
         this.name = name;
         this.balance = balance;
         this.date = date;
+        this.emoji = emoji;
         this.userId = userId;
     }
 
@@ -62,6 +64,14 @@ public class Pocket {
 
     public void setDate(LocalDateTime date) {
         this.date = date;
+    }
+
+    public String getEmoji() {
+        return emoji;
+    }
+
+    public void setEmoji(String emoji) {
+        this.emoji = emoji;
     }
 
     public Long getUserId() {

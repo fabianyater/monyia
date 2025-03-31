@@ -17,7 +17,7 @@ public class UserAdapter implements IUserPersistencePort {
         UserEntity userEntity = userEntityMapper.toEntity(user);
         userRepository.save(userEntity);
 
-        user = userEntityMapper.toModel(userEntity);
+        user = userEntityMapper.toUser(userEntity);
 
         return user;
     }
@@ -25,5 +25,12 @@ public class UserAdapter implements IUserPersistencePort {
     @Override
     public boolean isEmailExists(String email) {
         return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public User getUserById(Long id) {
+        return userRepository.findById(id)
+                .map(userEntityMapper::toUser)
+                .orElse(null);
     }
 }

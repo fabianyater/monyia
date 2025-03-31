@@ -60,6 +60,25 @@ public class TransactionUseCase implements ITransactionServicePort {
         transactionPersistencePort.saveNewTransaction(transaction);
     }
 
+    @Override
+    public BigDecimal getMonthlyIncome(Long pocketId) {
+        Long userId = authenticationPort.getAuthenticatedUserId();
+        return transactionPersistencePort.getMonthlyIncome(pocketId, userId);
+    }
+
+    @Override
+    public BigDecimal getMonthlyExpense(Long pocketId) {
+        Long userId = authenticationPort.getAuthenticatedUserId();
+        return transactionPersistencePort.getMonthlyExpense(pocketId, userId);
+    }
+
+    @Override
+    public BigDecimal getMonthlyTotal(Long pocketId) {
+        Long userId = authenticationPort.getAuthenticatedUserId();
+        return transactionPersistencePort.getMonthlyTotal(pocketId, userId);
+    }
+
+
     private void updatePocketBalance(Pocket pocket, BigDecimal amount, TransactionType transactionType) {
         if (transactionType == TransactionType.EXPENSE) {
             pocketPersistencePort.updateBalanceById(pocket.getBalance().subtract(amount).longValue(), pocket.getId());

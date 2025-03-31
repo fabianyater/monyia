@@ -1,18 +1,22 @@
 package com.fyrdev.monyia.adapters.driving.http.controller;
 
 import com.fyrdev.monyia.adapters.driving.http.dto.request.PocketRequest;
+import com.fyrdev.monyia.adapters.driving.http.dto.response.PocketResponse;
 import com.fyrdev.monyia.adapters.driving.http.mapper.IPocketRequestMapper;
+import com.fyrdev.monyia.adapters.driving.http.mapper.IPocketResponseMapper;
+import com.fyrdev.monyia.configuration.exceptionhandler.ApiResponse;
 import com.fyrdev.monyia.domain.api.IPocketServicePort;
+import com.fyrdev.monyia.domain.model.Pocket;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/pockets")
@@ -20,6 +24,7 @@ import java.net.URI;
 public class PocketController {
     private final IPocketServicePort pocketServicePort;
     private final IPocketRequestMapper pocketRequestMapper;
+    private final IPocketResponseMapper pocketResponseMapper;
 
     @PostMapping("/")
     @PreAuthorize("isAuthenticated()")
@@ -28,5 +33,21 @@ public class PocketController {
         pocketServicePort.saveNewPocket(pocket);
 
         return ResponseEntity.created(URI.create("/api/v1/pockets/" + pocket.getId())).build();
+    }
+
+    @GetMapping("/user/{userId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<List<PocketResponse>>> getPockets(@Valid @PathVariable("userId") Long userId, HttpServletRequest request) {
+        List<Pocket> pockets = pocketServicePort.getPockets(userId);
+
+        ApiResponse<List<PocketResponse>> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                null,
+                pockets.stream().map(pocketResponseMapper::toPocketResponse).toList(),
+                request.getRequestURI(),
+                System.currentTimeMillis()
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

@@ -25,6 +25,7 @@ public class JwtUtils {
         String email = user.getEmail();
         String userId = user.getId().toString();
         String uuid = user.getUuid();
+        String firstName = user.getName().split(" ")[0];
 
         Date issuedAt = new Date(System.currentTimeMillis());
         Date expiresAt = new Date(System.currentTimeMillis() + jwtExpirationTime);
@@ -33,6 +34,7 @@ public class JwtUtils {
                 .setSubject(email)
                 .claim("userId", userId)
                 .claim("uuid", uuid)
+                .claim("firstName", firstName)
                 .setIssuedAt(issuedAt)
                 .setExpiration(expiresAt)
                 .signWith(getSignatureKey(), SignatureAlgorithm.HS256)

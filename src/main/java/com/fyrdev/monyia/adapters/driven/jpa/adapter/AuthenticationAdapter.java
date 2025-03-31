@@ -20,7 +20,14 @@ public class AuthenticationAdapter implements IAuthenticationPort {
         Authentication authentication = performAuthentication(email, password);
         UserEntity userEntity = (UserEntity) authentication.getPrincipal();
 
-        return new User(userEntity.getId(), userEntity.getUuid(), userEntity.getName(), userEntity.getEmail(), userEntity.getPassword());
+        return new User(
+                userEntity.getId(),
+                userEntity.getUuid(),
+                userEntity.getName(),
+                userEntity.getEmail(),
+                userEntity.getColor(),
+                userEntity.getPassword()
+        );
     }
 
     @Override
