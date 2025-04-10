@@ -1,14 +1,17 @@
 package com.fyrdev.monyia.configuration.exceptionhandler;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fyrdev.monyia.domain.exception.AlreadyExistsException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.nio.channels.ClosedChannelException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -58,5 +61,53 @@ public class ControllerAdvisor {
         );
 
         return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ApiResponse<Object>> handleAuthorizationDeniedException(
+            AuthorizationDeniedException ex,
+            HttpServletRequest request
+    ) {
+        ApiResponse<Object> response = new ApiResponse<>(
+                HttpStatus.FORBIDDEN.value(),
+                ex.getMessage(),
+                null,
+                request.getRequestURI(),
+                System.currentTimeMillis()
+        );
+
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(JsonParseException.class)
+    public ResponseEntity<ApiResponse<Object>> handleJsonParseException(
+            JsonParseException ex,
+            HttpServletRequest request
+    ) {
+        ApiResponse<Object> response = new ApiResponse<>(
+                HttpStatus.FORBIDDEN.value(),
+                ex.getMessage(),
+                null,
+                request.getRequestURI(),
+                System.currentTimeMillis()
+        );
+
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(ClosedChannelException.class)
+    public ResponseEntity<ApiResponse<Object>> handleClosedChannelException(
+            ClosedChannelException ex,
+            HttpServletRequest request
+    ) {
+        ApiResponse<Object> response = new ApiResponse<>(
+                HttpStatus.FORBIDDEN.value(),
+                ex.getMessage(),
+                null,
+                request.getRequestURI(),
+                System.currentTimeMillis()
+        );
+
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 }
