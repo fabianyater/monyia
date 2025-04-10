@@ -1,5 +1,7 @@
 package com.fyrdev.monyia.configuration;
 
+import com.fyrdev.monyia.adapters.driven.ai.OllamaClient;
+import com.fyrdev.monyia.adapters.driven.ai.OllamaAdapter;
 import com.fyrdev.monyia.adapters.driven.jpa.adapter.AuthenticationAdapter;
 import com.fyrdev.monyia.adapters.driven.jpa.adapter.CategoryAdapter;
 import com.fyrdev.monyia.adapters.driven.jpa.adapter.EncryptionAdapter;
@@ -15,22 +17,9 @@ import com.fyrdev.monyia.adapters.driven.jpa.repository.IPocketRepository;
 import com.fyrdev.monyia.adapters.driven.jpa.repository.ITransactionRepository;
 import com.fyrdev.monyia.adapters.driven.jpa.repository.IUserRepository;
 import com.fyrdev.monyia.configuration.security.jwt.JwtUtils;
-import com.fyrdev.monyia.domain.api.IAuthenticationServicePort;
-import com.fyrdev.monyia.domain.api.ICategoryServicePort;
-import com.fyrdev.monyia.domain.api.IPocketServicePort;
-import com.fyrdev.monyia.domain.api.ITransactionServicePort;
-import com.fyrdev.monyia.domain.api.IUserServicePort;
-import com.fyrdev.monyia.domain.api.usecase.AuthenticationUseCase;
-import com.fyrdev.monyia.domain.api.usecase.CategoryUseCase;
-import com.fyrdev.monyia.domain.api.usecase.PocketUseCase;
-import com.fyrdev.monyia.domain.api.usecase.TransactionUseCase;
-import com.fyrdev.monyia.domain.api.usecase.UserUseCase;
-import com.fyrdev.monyia.domain.spi.IAuthenticationPort;
-import com.fyrdev.monyia.domain.spi.ICategoryPersistencePort;
-import com.fyrdev.monyia.domain.spi.IEncryptionPort;
-import com.fyrdev.monyia.domain.spi.IPocketPersistencePort;
-import com.fyrdev.monyia.domain.spi.ITransactionPersistencePort;
-import com.fyrdev.monyia.domain.spi.IUserPersistencePort;
+import com.fyrdev.monyia.domain.api.*;
+import com.fyrdev.monyia.domain.api.usecase.*;
+import com.fyrdev.monyia.domain.spi.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,6 +40,11 @@ public class BeanConfiguration {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final BCryptPasswordEncoder passwordEncoder;
+
+    @Bean
+    public OllamaClient ollamaClient() {
+        return new OllamaClient();
+    }
 
     @Bean
     public IEncryptionPort encryptionPort() {
@@ -83,8 +77,18 @@ public class BeanConfiguration {
     }
 
     @Bean
+    public AITextClassifierPort aiTextClassifierPort() {
+        return new OllamaAdapter(ollamaClient());
+    }
+
+    @Bean
+    public AiTextClassifierServicePort textClassifierServicePort() {
+        return new AiClassifierUseCase(aiTextClassifierPort());
+    }
+
+    @Bean
     public ICategoryServicePort categoryServicePort() {
-        return new CategoryUseCase(categoryPersistencePort(), authenticationPort());
+        return new CategoryUseCase(categoryPersistencePort(), authenticationPort(), aiTextClassifierPort());
     }
 
     @Bean
@@ -104,11 +108,6 @@ public class BeanConfiguration {
 
     @Bean
     public ITransactionServicePort transactionServicePort() {
-        return new TransactionUseCase(
-                transactionPersistencePort(),
-                categoryPersistencePort(),
-                pocketPersistencePort(),
-                authenticationPort())
-                ;
+        return new TransactionUseCase(transactionPersistencePort(), pocketPersistencePort(), authenticationPort());
     }
 }
