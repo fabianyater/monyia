@@ -13,6 +13,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Table(name = "categories")
 @AllArgsConstructor
@@ -29,7 +31,7 @@ public class CategoryEntity {
     private String name;
 
     @Column(name = "emoji")
-    private String emoji;
+    private List<String> emojis;
 
     @ManyToOne
     @JoinColumn(name = "user_entity_id")
