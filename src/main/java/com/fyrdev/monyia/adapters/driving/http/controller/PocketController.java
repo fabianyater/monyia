@@ -10,6 +10,7 @@ import com.fyrdev.monyia.domain.model.Pocket;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -37,13 +38,33 @@ public class PocketController {
 
     @GetMapping("/user/{userId}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<ApiResponse<List<PocketResponse>>> getPockets(@Valid @PathVariable("userId") Long userId, HttpServletRequest request) {
+    public ResponseEntity<ApiResponse<List<PocketResponse>>> getPockets(
+            @Valid
+            @PathVariable("userId")
+            Long userId,
+            HttpServletRequest request) {
         List<Pocket> pockets = pocketServicePort.getPockets(userId);
 
         ApiResponse<List<PocketResponse>> response = new ApiResponse<>(
                 HttpStatus.OK.value(),
                 null,
                 pockets.stream().map(pocketResponseMapper::toPocketResponse).toList(),
+                request.getRequestURI(),
+                System.currentTimeMillis()
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping("/{pocketId}/balance")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<Double>> getBalance(@PathVariable("pocketId") Long pocketId, HttpServletRequest request) {
+        Pocket pocket = pocketServicePort.getBalance(pocketId);
+
+        ApiResponse<Double> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                null,
+                pocket.getBalance().doubleValue(),
                 request.getRequestURI(),
                 System.currentTimeMillis()
         );
