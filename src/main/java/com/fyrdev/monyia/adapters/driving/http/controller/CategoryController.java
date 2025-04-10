@@ -4,16 +4,17 @@ import com.fyrdev.monyia.adapters.driving.http.dto.request.CategoryRequest;
 import com.fyrdev.monyia.adapters.driving.http.dto.response.CategoryResponse;
 import com.fyrdev.monyia.adapters.driving.http.mapper.ICategoryRequestMapper;
 import com.fyrdev.monyia.adapters.driving.http.mapper.ICategoryResponseMapper;
+import com.fyrdev.monyia.configuration.exceptionhandler.ApiResponse;
 import com.fyrdev.monyia.domain.api.ICategoryServicePort;
+import com.fyrdev.monyia.domain.model.Category;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.support.HttpRequestHandlerServlet;
 
 import java.net.URI;
 import java.util.List;
@@ -28,21 +29,40 @@ public class CategoryController {
 
     @PostMapping("/")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Void> saveNewCategory(@Valid @RequestBody CategoryRequest categoryRequest) {
-        var category = categoryRequestMapper.toCategory(categoryRequest);
-        categoryServicePort.saveNewCategory(category);
+    public ResponseEntity<ApiResponse<CategoryResponse>> saveNewCategory(
+            @Valid
+            @RequestBody
+            CategoryRequest categoryRequest,
+            HttpServletRequest request) {
+        Category category = categoryServicePort
+                .saveNewCategory(categoryRequestMapper.toCategory(categoryRequest));
+        CategoryResponse categoryResponse = categoryResponseMapper.toCategoryResponse(category);
 
-        URI location = URI.create("/api/v1/categories/" + category.getId());
+        ApiResponse<CategoryResponse> response = new ApiResponse<>(
+                HttpStatus.CREATED.value(),
+                null,
+                categoryResponse,
+                request.getRequestURI(),
+                System.currentTimeMillis()
+        );
 
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<CategoryResponse>> getAllCategories() {
+    public ResponseEntity<ApiResponse<List<CategoryResponse>>> getAllCategories(HttpServletRequest request) {
         var categories = categoryServicePort.getAllCategories();
         List<CategoryResponse> categoryResponses = categoryResponseMapper.toCategoryResponses(categories);
 
-        return ResponseEntity.ok(categoryResponses);
+        ApiResponse<List<CategoryResponse>> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                null,
+                categoryResponses,
+                request.getRequestURI(),
+                System.currentTimeMillis()
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
