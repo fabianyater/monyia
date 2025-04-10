@@ -20,5 +20,6 @@ public interface IPocketRepository extends JpaRepository<PocketEntity, Long> {
 
     List<PocketEntity> findByUserEntity_Id(Long id);
 
-
+    PocketEntity findByBalance(Long balance);
+    Double findBalanceById(Long id);
 }
