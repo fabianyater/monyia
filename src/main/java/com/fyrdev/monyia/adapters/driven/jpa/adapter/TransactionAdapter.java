@@ -1,8 +1,11 @@
 package com.fyrdev.monyia.adapters.driven.jpa.adapter;
 
+import com.fyrdev.monyia.adapters.driven.jpa.entity.TransactionEntity;
 import com.fyrdev.monyia.adapters.driven.jpa.mapper.ITransactionEntityMapper;
 import com.fyrdev.monyia.adapters.driven.jpa.repository.ITransactionRepository;
 import com.fyrdev.monyia.domain.model.Transaction;
+import com.fyrdev.monyia.domain.model.enums.TransactionType;
+import com.fyrdev.monyia.domain.spi.IAuthenticationPort;
 import com.fyrdev.monyia.domain.spi.ITransactionPersistencePort;
 import lombok.RequiredArgsConstructor;
 
@@ -15,8 +18,11 @@ public class TransactionAdapter implements ITransactionPersistencePort {
     private final ITransactionEntityMapper transactionEntityMapper;
 
     @Override
-    public void saveNewTransaction(Transaction transaction) {
-        transactionRepository.save(transactionEntityMapper.toEntity(transaction));
+    public Transaction saveNewTransaction(Transaction transaction) {
+        TransactionEntity transactionEntity = transactionEntityMapper.toEntity(transaction);
+        transactionRepository.save(transactionEntity);
+
+        return transactionEntityMapper.toTransaction(transactionEntity);
     }
 
     @Override
@@ -27,11 +33,6 @@ public class TransactionAdapter implements ITransactionPersistencePort {
     @Override
     public BigDecimal getMonthlyExpense(Long pocketId, Long userId) {
         return transactionRepository.getMonthlyExpense(pocketId, userId, getStartOfMonth(), getStartOfNextMonth());
-    }
-
-    @Override
-    public BigDecimal getMonthlyTotal(Long pocketId, Long userId) {
-        return transactionRepository.getMonthlyTotal(pocketId, userId, getStartOfMonth(), getStartOfNextMonth());
     }
 
     private LocalDateTime getStartOfMonth() {
