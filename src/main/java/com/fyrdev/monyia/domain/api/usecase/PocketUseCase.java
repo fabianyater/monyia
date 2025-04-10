@@ -3,6 +3,7 @@ package com.fyrdev.monyia.domain.api.usecase;
 import com.fyrdev.monyia.configuration.exceptionhandler.ResourceNotFoundException;
 import com.fyrdev.monyia.domain.api.IPocketServicePort;
 import com.fyrdev.monyia.domain.model.Pocket;
+import com.fyrdev.monyia.domain.model.User;
 import com.fyrdev.monyia.domain.model.enums.TransactionType;
 import com.fyrdev.monyia.domain.spi.IAuthenticationPort;
 import com.fyrdev.monyia.domain.spi.IPocketPersistencePort;
@@ -46,8 +47,15 @@ public class PocketUseCase implements IPocketServicePort {
     }
 
     @Override
-    public Double getTotalBalanceByTransactionType(Long pocketId, TransactionType transactionType) {
-        return 0.0;
+    public Pocket getBalance(Long pocketId) {
+        Long userId = authenticationPort.getAuthenticatedUserId();
+        Pocket pocket = pocketPersistencePort.getPocketByIdAndUserId(pocketId, userId);
+
+        if (pocket == null) {
+            throw new ResourceNotFoundException(DomainConstants.POCKET_NOT_FOUND_MESSAGE);
+        }
+
+        return pocketPersistencePort.getBalance(pocketId);
     }
 
     @Override

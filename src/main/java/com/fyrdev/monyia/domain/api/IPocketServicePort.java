@@ -8,6 +8,6 @@ import java.util.List;
 public interface IPocketServicePort {
     void saveNewPocket(Pocket pocket);
     void saveNewPocket(Pocket pocket, Long userId);
-    Double getTotalBalanceByTransactionType(Long pocketId, TransactionType transactionType);
+    Pocket getBalance(Long pocketId);
     List<Pocket> getPockets(Long userId);
 }
