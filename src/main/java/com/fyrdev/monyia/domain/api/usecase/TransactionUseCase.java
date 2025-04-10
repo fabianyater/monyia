@@ -1,14 +1,11 @@
 package com.fyrdev.monyia.domain.api.usecase;
 
 import com.fyrdev.monyia.domain.api.ITransactionServicePort;
-import com.fyrdev.monyia.domain.exception.CategoryNotFoundException;
 import com.fyrdev.monyia.domain.exception.PocketNotFoundExceptiont;
-import com.fyrdev.monyia.domain.model.Category;
 import com.fyrdev.monyia.domain.model.Pocket;
 import com.fyrdev.monyia.domain.model.Transaction;
 import com.fyrdev.monyia.domain.model.enums.TransactionType;
 import com.fyrdev.monyia.domain.spi.IAuthenticationPort;
-import com.fyrdev.monyia.domain.spi.ICategoryPersistencePort;
 import com.fyrdev.monyia.domain.spi.IPocketPersistencePort;
 import com.fyrdev.monyia.domain.spi.ITransactionPersistencePort;
 import com.fyrdev.monyia.domain.util.DomainConstants;
@@ -18,28 +15,20 @@ import java.util.UUID;
 
 public class TransactionUseCase implements ITransactionServicePort {
     private final ITransactionPersistencePort transactionPersistencePort;
-    private final ICategoryPersistencePort categoryPersistencePort;
     private final IPocketPersistencePort pocketPersistencePort;
     private final IAuthenticationPort authenticationPort;
 
     public TransactionUseCase(ITransactionPersistencePort transactionPersistencePort,
-                              ICategoryPersistencePort categoryPersistencePort,
                               IPocketPersistencePort pocketPersistencePort,
                               IAuthenticationPort authenticationPort) {
         this.transactionPersistencePort = transactionPersistencePort;
-        this.categoryPersistencePort = categoryPersistencePort;
         this.pocketPersistencePort = pocketPersistencePort;
         this.authenticationPort = authenticationPort;
     }
 
     @Override
-    public void saveNewTransaction(Transaction transaction) {
+    public Transaction saveNewTransaction(Transaction transaction) {
         Long userId = authenticationPort.getAuthenticatedUserId();
-        Category category = categoryPersistencePort.getCategoryByIdAndUser(transaction.getCategoryId(), userId);
-
-        if (category == null) {
-            throw new CategoryNotFoundException(DomainConstants.CATEGORY_NOT_FOUND_MESSAGE);
-        }
 
         Pocket pocket = pocketPersistencePort.getPocketByIdAndUserId(transaction.getPocketId(), userId);
 
@@ -53,11 +42,10 @@ public class TransactionUseCase implements ITransactionServicePort {
             transaction.setUuid(UUID.randomUUID());
         }
 
-        transaction.setCategoryId(category.getId());
         transaction.setPocketId(pocket.getId());
         updatePocketBalance(pocket, transaction.getAmount(), type);
 
-        transactionPersistencePort.saveNewTransaction(transaction);
+        return transactionPersistencePort.saveNewTransaction(transaction);
     }
 
     @Override
@@ -71,13 +59,6 @@ public class TransactionUseCase implements ITransactionServicePort {
         Long userId = authenticationPort.getAuthenticatedUserId();
         return transactionPersistencePort.getMonthlyExpense(pocketId, userId);
     }
-
-    @Override
-    public BigDecimal getMonthlyTotal(Long pocketId) {
-        Long userId = authenticationPort.getAuthenticatedUserId();
-        return transactionPersistencePort.getMonthlyTotal(pocketId, userId);
-    }
-
 
     private void updatePocketBalance(Pocket pocket, BigDecimal amount, TransactionType transactionType) {
         if (transactionType == TransactionType.EXPENSE) {
