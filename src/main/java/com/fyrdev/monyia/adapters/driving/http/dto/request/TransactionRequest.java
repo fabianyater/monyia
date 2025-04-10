@@ -1,5 +1,7 @@
 package com.fyrdev.monyia.adapters.driving.http.dto.request;
 
+import com.fyrdev.monyia.domain.model.enums.Periodicity;
+import com.fyrdev.monyia.domain.model.enums.TransactionType;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
@@ -9,6 +11,7 @@ import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -24,21 +27,16 @@ public class TransactionRequest {
 
     @NotNull(message = "Transaction date cannot be empty")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private LocalDateTime date;
+    private LocalDate date;
 
     @NotNull(message = "Transaction periodicity cannot be empty")
-    @NotBlank(message = "Transaction periodicity cannot be empty")
-    @Enumerated(EnumType.STRING)
-    private String periodicity;
+    private Periodicity periodicity;
 
     @NotNull(message = "Transaction transaction type cannot be empty")
-    @NotBlank(message = "Transaction transaction type cannot be empty")
-    @Enumerated(EnumType.STRING)
-    private String transactionType;
+    private TransactionType transactionType;
 
-    @NotNull(message = "Transaction category id cannot be empty")
-    @NumberFormat(style = NumberFormat.Style.NUMBER)
-    private Long categoryId;
+    @NotNull(message = "Transaction category cannot be empty")
+    private CategoryRequest category;
 
     @NotNull(message = "Transaction pocket id cannot be empty")
     @NumberFormat(style = NumberFormat.Style.NUMBER)
