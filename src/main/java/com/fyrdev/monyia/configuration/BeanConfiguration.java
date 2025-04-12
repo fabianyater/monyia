@@ -83,7 +83,7 @@ public class BeanConfiguration {
 
     @Bean
     public AiTextClassifierServicePort textClassifierServicePort() {
-        return new AiClassifierUseCase(aiTextClassifierPort());
+        return new AiClassifierUseCase(aiTextClassifierPort(), categoryServicePort());
     }
 
     @Bean
