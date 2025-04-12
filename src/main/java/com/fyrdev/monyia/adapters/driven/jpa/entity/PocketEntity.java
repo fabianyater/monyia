@@ -30,7 +30,7 @@ public class PocketEntity {
     private String name;
 
     @Column(nullable = false)
-    private Long balance;
+    private Double balance;
 
     @Column(nullable = false)
     private LocalDateTime date;

@@ -75,11 +75,11 @@ public class TransactionUseCase implements ITransactionServicePort {
                 ;
     }
 
-    private void updatePocketBalance(Pocket pocket, BigDecimal amount, TransactionType transactionType) {
+    private void updatePocketBalance(Pocket pocket, Double amount, TransactionType transactionType) {
         if (transactionType == TransactionType.EXPENSE) {
-            pocketPersistencePort.updateBalanceById(pocket.getBalance().subtract(amount).longValue(), pocket.getId());
+            pocketPersistencePort.updateBalanceById(pocket.getBalance() - amount, pocket.getId());
         } else {
-            pocketPersistencePort.updateBalanceById(pocket.getBalance().add(amount).longValue(), pocket.getId());
+            pocketPersistencePort.updateBalanceById(pocket.getBalance() + amount, pocket.getId());
         }
     }
 }

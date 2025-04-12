@@ -11,7 +11,7 @@ public class Transaction {
     private Long id;
     private UUID uuid;
     private String description;
-    private BigDecimal amount;
+    private Double amount;
     private LocalDateTime date;
     private Periodicity periodicity;
     private TransactionType transactionType;
@@ -21,7 +21,7 @@ public class Transaction {
     public Transaction() {
     }
 
-    public Transaction(Long id, UUID uuid, String description, BigDecimal amount, LocalDateTime date, Periodicity periodicity, TransactionType transactionType, Long categoryId, Long pocketId) {
+    public Transaction(Long id, UUID uuid, String description, Double amount, LocalDateTime date, Periodicity periodicity, TransactionType transactionType, Long categoryId, Long pocketId) {
         this.id = id;
         this.uuid = uuid;
         this.description = description;
@@ -57,11 +57,11 @@ public class Transaction {
         this.description = description;
     }
 
-    public BigDecimal getAmount() {
+    public Double getAmount() {
         return amount;
     }
 
-    public void setAmount(BigDecimal amount) {
+    public void setAmount(Double amount) {
         this.amount = amount;
     }
 

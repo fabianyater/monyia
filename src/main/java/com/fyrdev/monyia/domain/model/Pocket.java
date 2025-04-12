@@ -8,7 +8,7 @@ public class Pocket {
     private Long id;
     private UUID uuid;
     private String name;
-    private BigDecimal balance;
+    private Double balance;
     private LocalDateTime date;
     private String emoji;
     private Long userId;
@@ -16,7 +16,7 @@ public class Pocket {
     public Pocket() {
     }
 
-    public Pocket(Long id, UUID uuid, String name, BigDecimal balance, LocalDateTime date, String emoji, Long userId) {
+    public Pocket(Long id, UUID uuid, String name, Double balance, LocalDateTime date, String emoji, Long userId) {
         this.id = id;
         this.uuid = uuid;
         this.name = name;
@@ -50,11 +50,11 @@ public class Pocket {
         this.name = name;
     }
 
-    public BigDecimal getBalance() {
+    public Double getBalance() {
         return balance;
     }
 
-    public void setBalance(BigDecimal balance) {
+    public void setBalance(Double balance) {
         this.balance = balance;
     }
 

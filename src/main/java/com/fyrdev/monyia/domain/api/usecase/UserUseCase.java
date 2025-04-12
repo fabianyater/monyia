@@ -42,7 +42,7 @@ public class UserUseCase implements IUserServicePort {
         var createdUser = userPersistencePort.saveNewUser(user);
 
         Pocket pocket = new Pocket();
-        pocket.setBalance(BigDecimal.ZERO);
+        pocket.setBalance(0.0);
         pocket.setName("Mi bolsillo");
         pocket.setEmoji("\uD83D\uDC5B");
 

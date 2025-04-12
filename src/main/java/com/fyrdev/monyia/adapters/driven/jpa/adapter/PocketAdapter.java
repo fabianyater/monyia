@@ -43,7 +43,7 @@ public class PocketAdapter implements IPocketPersistencePort {
     }
 
     @Override
-    public int updateBalanceById(Long balance, Long pocketId) {
+    public int updateBalanceById(Double balance, Long pocketId) {
         return pocketRepository.updateBalanceById(balance, pocketId);
     }
 }

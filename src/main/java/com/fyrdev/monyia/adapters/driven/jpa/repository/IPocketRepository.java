@@ -14,7 +14,7 @@ public interface IPocketRepository extends JpaRepository<PocketEntity, Long> {
     @Transactional
     @Modifying
     @Query("update PocketEntity p set p.balance = ?1 where p.id = ?2")
-    int updateBalanceById(Long balance, Long id);
+    int updateBalanceById(Double balance, Long id);
 
     Optional<PocketEntity> findByIdAndUserEntity_Id(Long id, Long id1);
 

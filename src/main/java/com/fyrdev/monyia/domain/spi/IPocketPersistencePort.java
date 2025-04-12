@@ -10,5 +10,5 @@ public interface IPocketPersistencePort {
     List<Pocket> getPocketsByUserId(Long userId);
     Pocket getPocketByIdAndUserId(Long pocketId, Long userId);
     Pocket getBalance(Long pocketId);
-    int updateBalanceById(Long balance, Long pocketId);
+    int updateBalanceById(Double balance, Long pocketId);
 }
