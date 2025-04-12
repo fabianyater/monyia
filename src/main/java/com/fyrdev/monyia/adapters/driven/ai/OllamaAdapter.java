@@ -2,6 +2,7 @@ package com.fyrdev.monyia.adapters.driven.ai;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fyrdev.monyia.domain.model.Category;
 import com.fyrdev.monyia.domain.model.ClassificationResult;
 import com.fyrdev.monyia.domain.spi.AITextClassifierPort;
 import lombok.RequiredArgsConstructor;
@@ -31,10 +32,13 @@ public class OllamaAdapter implements AITextClassifierPort {
         try {
             JsonNode root = objectMapper.readTree(response);
 
+            Category category = new Category();
+            category.setName(root.get("category").asText());
+
             return new ClassificationResult(
                     root.get("date").asText(),
                     root.get("periodicity").asText(),
-                    root.get("category").asText(),
+                    category,
                     root.get("value").asLong(),
                     root.get("type").asText(),
                     root.get("description").asText()
