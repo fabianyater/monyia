@@ -4,6 +4,7 @@ import com.fyrdev.monyia.domain.api.ITransactionServicePort;
 import com.fyrdev.monyia.domain.exception.PocketNotFoundExceptiont;
 import com.fyrdev.monyia.domain.model.Pocket;
 import com.fyrdev.monyia.domain.model.Transaction;
+import com.fyrdev.monyia.domain.model.TransactionSummaryByCategoriesResponse;
 import com.fyrdev.monyia.domain.model.enums.TransactionType;
 import com.fyrdev.monyia.domain.spi.IAuthenticationPort;
 import com.fyrdev.monyia.domain.spi.IPocketPersistencePort;
@@ -11,6 +12,8 @@ import com.fyrdev.monyia.domain.spi.ITransactionPersistencePort;
 import com.fyrdev.monyia.domain.util.DomainConstants;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
+import java.util.List;
 import java.util.UUID;
 
 public class TransactionUseCase implements ITransactionServicePort {
@@ -58,6 +61,18 @@ public class TransactionUseCase implements ITransactionServicePort {
     public BigDecimal getMonthlyExpense(Long pocketId) {
         Long userId = authenticationPort.getAuthenticatedUserId();
         return transactionPersistencePort.getMonthlyExpense(pocketId, userId);
+    }
+
+    @Override
+    public List<TransactionSummaryByCategoriesResponse> getTransactionSummaryByCategories(Long pocketId, TransactionType transactionType) {
+        Long userId = authenticationPort.getAuthenticatedUserId();
+        return transactionPersistencePort.getTransactionSummaryByCategories(pocketId, userId, transactionType)
+                .stream()
+                .sorted(Comparator
+                        .comparing(TransactionSummaryByCategoriesResponse::totalAmount)
+                        .reversed())
+                .toList()
+                ;
     }
 
     private void updatePocketBalance(Pocket pocket, BigDecimal amount, TransactionType transactionType) {
