@@ -32,4 +32,9 @@ public class AiClassifierUseCase implements AiTextClassifierServicePort {
                 result.description()
         );
     }
+
+    @Override
+    public List<String> suggestEmojis(String categoryName) {
+        return classifierPort.suggestEmojis(categoryName);
+    }
 }

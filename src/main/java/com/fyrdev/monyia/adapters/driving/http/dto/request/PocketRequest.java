@@ -16,7 +16,4 @@ public class PocketRequest {
     @NotNull(message = "Pocket balance cannot be empty")
     @NumberFormat(style = NumberFormat.Style.CURRENCY)
     private Long balance;
-
-    @NotNull(message = "Pocket emoji cannot be empty")
-    private String emoji;
 }

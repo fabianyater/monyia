@@ -36,14 +36,11 @@ public class PocketController {
         return ResponseEntity.created(URI.create("/api/v1/pockets/" + pocket.getId())).build();
     }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<List<PocketResponse>>> getPockets(
-            @Valid
-            @PathVariable("userId")
-            Long userId,
             HttpServletRequest request) {
-        List<Pocket> pockets = pocketServicePort.getPockets(userId);
+        List<Pocket> pockets = pocketServicePort.getPockets();
 
         ApiResponse<List<PocketResponse>> response = new ApiResponse<>(
                 HttpStatus.OK.value(),

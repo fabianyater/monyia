@@ -9,5 +9,5 @@ public interface IPocketServicePort {
     void saveNewPocket(Pocket pocket);
     void saveNewPocket(Pocket pocket, Long userId);
     Pocket getBalance(Long pocketId);
-    List<Pocket> getPockets(Long userId);
+    List<Pocket> getPockets();
 }
