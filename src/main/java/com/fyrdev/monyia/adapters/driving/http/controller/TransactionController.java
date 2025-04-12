@@ -8,6 +8,8 @@ import com.fyrdev.monyia.configuration.exceptionhandler.ApiResponse;
 import com.fyrdev.monyia.domain.api.ICategoryServicePort;
 import com.fyrdev.monyia.domain.api.ITransactionServicePort;
 import com.fyrdev.monyia.domain.model.Category;
+import com.fyrdev.monyia.domain.model.TransactionSummaryByCategoriesResponse;
+import com.fyrdev.monyia.domain.model.enums.TransactionType;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.math.BigDecimal;
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/transactions")
@@ -80,6 +83,24 @@ public class TransactionController {
         );
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping()
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<List<TransactionSummaryByCategoriesResponse>>> getTransactionSummaryByCategories(
+            @RequestParam Long pocketId,
+            @RequestParam TransactionType transactionType,
+            HttpServletRequest request) {
+        var transactionSummary = transactionServicePort.getTransactionSummaryByCategories(pocketId, transactionType);
+        ApiResponse<List<TransactionSummaryByCategoriesResponse>> response = new ApiResponse<>(
+                200,
+                "Resumen de transacciones por categorías obtenido correctamente",
+                transactionSummary,
+                request.getRequestURI(),
+                System.currentTimeMillis()
+        );
+        return ResponseEntity.ok(response);
+    }
+
 
     private String currentUrl() {
         return ServletUriComponentsBuilder.fromCurrentRequest().toUriString();
