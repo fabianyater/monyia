@@ -6,6 +6,7 @@ import com.fyrdev.monyia.domain.spi.AITextClassifierPort;
 import com.fyrdev.monyia.domain.spi.IAuthenticationPort;
 import com.fyrdev.monyia.domain.spi.ICategoryPersistencePort;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class CategoryUseCase implements ICategoryServicePort {
@@ -30,7 +31,10 @@ public class CategoryUseCase implements ICategoryServicePort {
 
     @Override
     public List<Category> getAllCategories() {
-        return categoryPersistencePort.getAllCategories(authenticationPort.getAuthenticatedUserId());
+        return categoryPersistencePort
+                .getAllCategories(authenticationPort.getAuthenticatedUserId())
+                .stream().sorted(Comparator.comparing(Category::getId).reversed())
+                .toList();
     }
 
     @Override
@@ -46,5 +50,19 @@ public class CategoryUseCase implements ICategoryServicePort {
         }
 
         return foundCategory.getId();
+    }
+
+    @Override
+    public Category getCategoryByName(String name) {
+        Category category = categoryPersistencePort.getCategoryByName(name, authenticationPort.getAuthenticatedUserId());
+
+        if (category == null) {
+            Category newCategory = new Category();
+            newCategory.setName(name);
+
+            return saveNewCategory(newCategory);
+        }
+
+        return category;
     }
 }
