@@ -4,6 +4,7 @@ import com.fyrdev.monyia.adapters.driven.jpa.entity.TransactionEntity;
 import com.fyrdev.monyia.adapters.driven.jpa.mapper.ITransactionEntityMapper;
 import com.fyrdev.monyia.adapters.driven.jpa.repository.ITransactionRepository;
 import com.fyrdev.monyia.domain.model.Transaction;
+import com.fyrdev.monyia.domain.model.TransactionSummaryByCategoriesResponse;
 import com.fyrdev.monyia.domain.model.enums.TransactionType;
 import com.fyrdev.monyia.domain.spi.IAuthenticationPort;
 import com.fyrdev.monyia.domain.spi.ITransactionPersistencePort;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RequiredArgsConstructor
 public class TransactionAdapter implements ITransactionPersistencePort {
@@ -33,6 +35,22 @@ public class TransactionAdapter implements ITransactionPersistencePort {
     @Override
     public BigDecimal getMonthlyExpense(Long pocketId, Long userId) {
         return transactionRepository.getMonthlyExpense(pocketId, userId, getStartOfMonth(), getStartOfNextMonth());
+    }
+
+    @Override
+    public List<TransactionSummaryByCategoriesResponse> getTransactionSummaryByCategories(Long pocketId, Long userId, TransactionType transactionType) {
+        List<TransactionSummaryByCategoriesResponse> result = transactionRepository
+                .getTotalAmountByCategoryGrouped(transactionType, userId, pocketId)
+                .stream()
+                .map(obj -> new TransactionSummaryByCategoriesResponse(
+                        (Long) obj[0],
+                        (String) obj[1],
+                        (obj[2] instanceof List<?> list ? list.stream().map(String::valueOf).toList() : List.of()),
+                        ((BigDecimal) obj[3]).longValue()
+                ))
+                .toList();
+
+        return result;
     }
 
     private LocalDateTime getStartOfMonth() {
