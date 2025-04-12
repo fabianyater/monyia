@@ -8,4 +8,5 @@ public interface ICategoryServicePort {
     Category saveNewCategory(Category category);
     List<Category> getAllCategories();
     Long getCategoryIdByName(String category);
+    Category getCategoryByName(String name);
 }

@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 public record ClassificationResult(
         String date,
         String periodicity,
-        String category,
+        Category category,
         Long value,
         String type,
         String description) {
