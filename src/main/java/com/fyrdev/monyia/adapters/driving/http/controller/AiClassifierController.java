@@ -1,6 +1,8 @@
 package com.fyrdev.monyia.adapters.driving.http.controller;
 
 import com.fyrdev.monyia.adapters.driving.http.dto.response.CategoryResponse;
+import com.fyrdev.monyia.adapters.driving.http.dto.response.ClassificationResponse;
+import com.fyrdev.monyia.adapters.driving.http.mapper.IClassificationRequestMapper;
 import com.fyrdev.monyia.configuration.exceptionhandler.ApiResponse;
 import com.fyrdev.monyia.domain.api.AiTextClassifierServicePort;
 import com.fyrdev.monyia.domain.model.ClassificationResult;
@@ -22,18 +24,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AiClassifierController {
     private final AiTextClassifierServicePort textClassifierServicePort;
+    private final IClassificationRequestMapper classificationRequestMapper;
 
     @GetMapping()
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<ApiResponse<ClassificationResult>> classifyTransaction(
+    public ResponseEntity<ApiResponse<ClassificationResponse>> classifyTransaction(
             @RequestParam("prompt") String prompt,
             HttpServletRequest request) {
         ClassificationResult result = textClassifierServicePort.classifyTransaction(prompt);
+        ClassificationResponse classificationResponse = classificationRequestMapper.toClassificationResponse(result);
 
-        ApiResponse<ClassificationResult> response = new ApiResponse<>(
+        ApiResponse<ClassificationResponse> response = new ApiResponse<>(
                 HttpStatus.OK.value(),
                 null,
-                result,
+                classificationResponse,
                 request.getRequestURI(),
                 System.currentTimeMillis()
         );
