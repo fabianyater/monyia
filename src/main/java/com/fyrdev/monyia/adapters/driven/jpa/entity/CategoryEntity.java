@@ -33,6 +33,8 @@ public class CategoryEntity {
     @Column(name = "emoji")
     private List<String> emojis;
 
+    private String defaultEmoji;
+
     @ManyToOne
     @JoinColumn(name = "user_entity_id")
     private UserEntity userEntity;

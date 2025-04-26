@@ -48,4 +48,9 @@ public class CategoryAdapter implements ICategoryPersistencePort {
                 .map(categoryEntityMapper::toCategory)
                 .orElse(null);
     }
+
+    @Override
+    public void updateDefaultEmoji(String categoryName, String newEmoji) {
+        categoryRepository.updateDefaultEmojiByName(newEmoji, categoryName);
+    }
 }
