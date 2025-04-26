@@ -11,4 +11,5 @@ public class CategoryResponse {
     private Long id;
     private String name;
     private List<String> emojis;
+    private String defaultEmoji;
 }

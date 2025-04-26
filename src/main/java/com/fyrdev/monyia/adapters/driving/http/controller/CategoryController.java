@@ -1,6 +1,7 @@
 package com.fyrdev.monyia.adapters.driving.http.controller;
 
 import com.fyrdev.monyia.adapters.driving.http.dto.request.CategoryRequest;
+import com.fyrdev.monyia.adapters.driving.http.dto.request.UpdateCategoryEmojiRequest;
 import com.fyrdev.monyia.adapters.driving.http.dto.response.CategoryResponse;
 import com.fyrdev.monyia.adapters.driving.http.mapper.ICategoryRequestMapper;
 import com.fyrdev.monyia.adapters.driving.http.mapper.ICategoryResponseMapper;
@@ -59,6 +60,28 @@ public class CategoryController {
                 HttpStatus.OK.value(),
                 null,
                 categoryResponses,
+                request.getRequestURI(),
+                System.currentTimeMillis()
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PatchMapping("/")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<Void>> updateDefaultEmoji(
+            HttpServletRequest request,
+            @Valid
+            @RequestBody
+            UpdateCategoryEmojiRequest updateCategoryEmojiRequest) {
+        categoryServicePort.updateDefaultEmoji(
+                updateCategoryEmojiRequest.categoryName(), updateCategoryEmojiRequest.newEmoji()
+        );
+
+        ApiResponse<Void> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Emoji actualizado correctamente",
+                null,
                 request.getRequestURI(),
                 System.currentTimeMillis()
         );
