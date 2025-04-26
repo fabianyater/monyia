@@ -6,16 +6,26 @@ public class Category {
     private Long id;
     private String name;
     private List<String> emojis;
+    private String defaultEmoji;
     private Long userId;
 
     public Category() {
     }
 
-    public Category(Long id, String name, List<String> emojis, Long userId) {
+    public Category(Long id, String name, List<String> emojis, String defaultEmoji, Long userId) {
         this.id = id;
         this.name = name;
         this.emojis = emojis;
+        this.defaultEmoji = defaultEmoji;
         this.userId = userId;
+    }
+
+    public String getDefaultEmoji() {
+        return defaultEmoji;
+    }
+
+    public void setDefaultEmoji(String defaultEmoji) {
+        this.defaultEmoji = defaultEmoji;
     }
 
     public Long getId() {

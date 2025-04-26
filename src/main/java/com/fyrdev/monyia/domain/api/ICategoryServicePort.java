@@ -9,4 +9,5 @@ public interface ICategoryServicePort {
     List<Category> getAllCategories();
     Long getCategoryIdByName(String category);
     Category getCategoryByName(String name);
+    void updateDefaultEmoji(String categoryName, String newEmoji);
 }

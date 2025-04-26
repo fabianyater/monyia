@@ -10,4 +10,5 @@ public interface ICategoryPersistencePort {
     boolean isCategoryExists(Long categoryId);
     Category getCategoryByIdAndUser(Long categoryId, Long userId);
     Category getCategoryByName(String category, Long userId);
+    void updateDefaultEmoji(String categoryName, String newEmoji);
 }

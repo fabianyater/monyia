@@ -1,10 +1,12 @@
 package com.fyrdev.monyia.domain.api.usecase;
 
+import com.fyrdev.monyia.configuration.exceptionhandler.ResourceNotFoundException;
 import com.fyrdev.monyia.domain.api.ICategoryServicePort;
 import com.fyrdev.monyia.domain.model.Category;
 import com.fyrdev.monyia.domain.spi.AITextClassifierPort;
 import com.fyrdev.monyia.domain.spi.IAuthenticationPort;
 import com.fyrdev.monyia.domain.spi.ICategoryPersistencePort;
+import com.fyrdev.monyia.domain.util.DomainConstants;
 
 import java.util.Comparator;
 import java.util.List;
@@ -25,6 +27,7 @@ public class CategoryUseCase implements ICategoryServicePort {
         category.setUserId(authenticationPort.getAuthenticatedUserId());
         List<String> emojis = aiTextClassifierPort.suggestEmojis(category.getName());
         category.setEmojis(emojis);
+        category.setDefaultEmoji(emojis.get(0));
 
         return categoryPersistencePort.saveNewCategory(category);
     }
@@ -64,5 +67,17 @@ public class CategoryUseCase implements ICategoryServicePort {
         }
 
         return category;
+    }
+
+    @Override
+    public void updateDefaultEmoji(String categoryName, String newEmoji) {
+        Category category = categoryPersistencePort.getCategoryByName(categoryName, authenticationPort.getAuthenticatedUserId());
+
+        if (category != null) {
+            categoryPersistencePort.updateDefaultEmoji(categoryName, newEmoji);
+        } else {
+            throw new ResourceNotFoundException(DomainConstants.CATEGORY_NOT_FOUND_MESSAGE);
+        }
+
     }
 }
