@@ -70,4 +70,9 @@ public class PocketUseCase implements IPocketServicePort {
         Long userId = authenticationPort.getAuthenticatedUserId();
         return pocketPersistencePort.getPocketsByUserId(userId);
     }
+
+    @Override
+    public Double getTotalBalanceByUserId() {
+        return pocketPersistencePort.getTotalBalanceByUserId(authenticationPort.getAuthenticatedUserId());
+    }
 }

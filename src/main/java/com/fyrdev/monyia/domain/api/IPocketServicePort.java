@@ -10,4 +10,5 @@ public interface IPocketServicePort {
     void saveNewPocket(Pocket pocket, Long userId);
     Pocket getBalance(Long pocketId);
     List<Pocket> getPockets();
+    Double getTotalBalanceByUserId();
 }
