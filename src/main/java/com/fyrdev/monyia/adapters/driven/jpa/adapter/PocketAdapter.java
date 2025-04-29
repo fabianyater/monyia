@@ -46,4 +46,9 @@ public class PocketAdapter implements IPocketPersistencePort {
     public int updateBalanceById(Double balance, Long pocketId) {
         return pocketRepository.updateBalanceById(balance, pocketId);
     }
+
+    @Override
+    public Double getTotalBalanceByUserId(Long userId) {
+        return pocketRepository.sumByUserEntity_Id(userId);
+    }
 }
