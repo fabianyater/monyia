@@ -2,11 +2,10 @@ package com.fyrdev.monyia.domain.api.usecase;
 
 import com.fyrdev.monyia.domain.api.ITransactionServicePort;
 import com.fyrdev.monyia.domain.exception.PocketNotFoundExceptiont;
-import com.fyrdev.monyia.domain.model.Pocket;
-import com.fyrdev.monyia.domain.model.Transaction;
-import com.fyrdev.monyia.domain.model.TransactionSummaryByCategoriesResponse;
+import com.fyrdev.monyia.domain.model.*;
 import com.fyrdev.monyia.domain.model.enums.TransactionType;
 import com.fyrdev.monyia.domain.spi.IAuthenticationPort;
+import com.fyrdev.monyia.domain.spi.ICategoryPersistencePort;
 import com.fyrdev.monyia.domain.spi.IPocketPersistencePort;
 import com.fyrdev.monyia.domain.spi.ITransactionPersistencePort;
 import com.fyrdev.monyia.domain.util.DomainConstants;
@@ -20,13 +19,15 @@ public class TransactionUseCase implements ITransactionServicePort {
     private final ITransactionPersistencePort transactionPersistencePort;
     private final IPocketPersistencePort pocketPersistencePort;
     private final IAuthenticationPort authenticationPort;
+    private final ICategoryPersistencePort categoryPersistencePort;
 
     public TransactionUseCase(ITransactionPersistencePort transactionPersistencePort,
                               IPocketPersistencePort pocketPersistencePort,
-                              IAuthenticationPort authenticationPort) {
+                              IAuthenticationPort authenticationPort, ICategoryPersistencePort categoryPersistencePort) {
         this.transactionPersistencePort = transactionPersistencePort;
         this.pocketPersistencePort = pocketPersistencePort;
         this.authenticationPort = authenticationPort;
+        this.categoryPersistencePort = categoryPersistencePort;
     }
 
     @Override
@@ -73,6 +74,18 @@ public class TransactionUseCase implements ITransactionServicePort {
                         .reversed())
                 .toList()
                 ;
+    }
+
+    @Override
+    public List<TransactionResponseSummary> listTransactionsByCategory(Long pocketId, String transactionType, String categoryName) {
+        Long userId = authenticationPort.getAuthenticatedUserId();
+        Category category = categoryPersistencePort.getCategoryByName(categoryName, userId);
+
+        return transactionPersistencePort
+                .listTransactionsByCategory(pocketId, userId, category.getId(), transactionType, categoryName)
+                .stream()
+                .sorted(Comparator.comparing(TransactionResponseSummary::date).reversed())
+                .toList();
     }
 
     private void updatePocketBalance(Pocket pocket, Double amount, TransactionType transactionType) {

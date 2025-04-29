@@ -1,6 +1,8 @@
 package com.fyrdev.monyia.domain.api;
 
+import com.fyrdev.monyia.domain.model.CustomPageable;
 import com.fyrdev.monyia.domain.model.Transaction;
+import com.fyrdev.monyia.domain.model.TransactionResponseSummary;
 import com.fyrdev.monyia.domain.model.TransactionSummaryByCategoriesResponse;
 import com.fyrdev.monyia.domain.model.enums.TransactionType;
 
@@ -12,4 +14,5 @@ public interface ITransactionServicePort {
     BigDecimal getMonthlyIncome(Long pocketId);
     BigDecimal getMonthlyExpense(Long pocketId);
     List<TransactionSummaryByCategoriesResponse> getTransactionSummaryByCategories(Long pocketId, TransactionType transactionType);
+    List<TransactionResponseSummary> listTransactionsByCategory(Long pocketId, String transactionType, String categoryName);
 }
