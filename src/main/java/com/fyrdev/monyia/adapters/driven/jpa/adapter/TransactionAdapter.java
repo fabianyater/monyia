@@ -1,16 +1,17 @@
 package com.fyrdev.monyia.adapters.driven.jpa.adapter;
 
+import com.fyrdev.monyia.domain.model.TransactionResponseSummary;
 import com.fyrdev.monyia.adapters.driven.jpa.entity.TransactionEntity;
 import com.fyrdev.monyia.adapters.driven.jpa.mapper.ITransactionEntityMapper;
 import com.fyrdev.monyia.adapters.driven.jpa.repository.ITransactionRepository;
 import com.fyrdev.monyia.domain.model.Transaction;
 import com.fyrdev.monyia.domain.model.TransactionSummaryByCategoriesResponse;
 import com.fyrdev.monyia.domain.model.enums.TransactionType;
-import com.fyrdev.monyia.domain.spi.IAuthenticationPort;
 import com.fyrdev.monyia.domain.spi.ITransactionPersistencePort;
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -39,16 +40,34 @@ public class TransactionAdapter implements ITransactionPersistencePort {
 
     @Override
     public List<TransactionSummaryByCategoriesResponse> getTransactionSummaryByCategories(Long pocketId, Long userId, TransactionType transactionType) {
-        List<TransactionSummaryByCategoriesResponse> result = transactionRepository
+
+        return transactionRepository
                 .getTotalAmountByCategoryGrouped(transactionType, userId, pocketId)
                 .stream()
                 .map(obj -> new TransactionSummaryByCategoriesResponse(
                         (Long) obj[0],
                         (String) obj[1],
-                        (obj[2] instanceof List<?> list ? list.stream().map(String::valueOf).toList() : List.of()),
+                        (String) obj[2],
                         ((BigDecimal) obj[3]).longValue()
                 ))
                 .toList();
+    }
+
+    @Override
+    public List<TransactionResponseSummary> listTransactionsByCategory(Long pocketId, Long userId, Long categoryId, String transactionType, String categoryName) {
+        var result = transactionRepository
+                .findTransactionsByFilters(pocketId, userId, categoryId, transactionType, categoryName)
+                .stream()
+                .map(obj -> new TransactionResponseSummary(
+                        (Long) obj[0],
+                        (String) obj[1],
+                        ((BigDecimal) obj[2]).doubleValue(),
+                        obj[3].toString(),
+                        (String) obj[4],
+                        (String) obj[5]
+                ))
+                .toList()
+        ;
 
         return result;
     }
