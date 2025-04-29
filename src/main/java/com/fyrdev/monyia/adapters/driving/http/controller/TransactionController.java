@@ -101,6 +101,28 @@ public class TransactionController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/category")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<List<TransactionResponse>>> getTransactionsByCategoryName(
+            HttpServletRequest request,
+            @RequestParam Long pocketId,
+            @RequestParam String categoryName,
+            @RequestParam TransactionType type) {
+        var result = transactionServicePort.listTransactionsByCategory(pocketId, type.name(), categoryName);
+        var transactions = transactionResponseMapper
+                .toTransactionResponseList(result);
+
+        ApiResponse<List<TransactionResponse>> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                null,
+                transactions,
+                request.getRequestURI(),
+                System.currentTimeMillis()
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
 
     private String currentUrl() {
         return ServletUriComponentsBuilder.fromCurrentRequest().toUriString();
