@@ -2,6 +2,7 @@ package com.fyrdev.monyia.adapters.driving.http.controller;
 
 import com.fyrdev.monyia.adapters.driving.http.dto.request.PocketRequest;
 import com.fyrdev.monyia.adapters.driving.http.dto.response.PocketResponse;
+import com.fyrdev.monyia.adapters.driving.http.dto.response.TotaBalanceResponse;
 import com.fyrdev.monyia.adapters.driving.http.mapper.IPocketRequestMapper;
 import com.fyrdev.monyia.adapters.driving.http.mapper.IPocketResponseMapper;
 import com.fyrdev.monyia.configuration.exceptionhandler.ApiResponse;
@@ -62,6 +63,23 @@ public class PocketController {
                 HttpStatus.OK.value(),
                 null,
                 pocket.getBalance().doubleValue(),
+                request.getRequestURI(),
+                System.currentTimeMillis()
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping("/balance")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<TotaBalanceResponse>> getTotalBalanceByUserId(HttpServletRequest request) {
+        Double balance = pocketServicePort.getTotalBalanceByUserId();
+        TotaBalanceResponse totalBalanceResponse = new TotaBalanceResponse(balance);
+
+        ApiResponse<TotaBalanceResponse> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                null,
+                totalBalanceResponse,
                 request.getRequestURI(),
                 System.currentTimeMillis()
         );
