@@ -14,6 +14,7 @@ import com.fyrdev.monyia.domain.spi.ILoanPersistencePort;
 import com.fyrdev.monyia.domain.util.DomainConstants;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class LoanUseCase implements ILoanServicePort {
     private final IAuthenticationPort authenticationPort;
@@ -36,9 +37,8 @@ public class LoanUseCase implements ILoanServicePort {
 
     @Override
     public void saveLoan(Loan loan) {
-        Long userId = authenticationPort.getAuthenticatedUserId();
         Double loanAmount = loan.getAmount();
-        Pocket pocket = pocketUseCase.getPocketByIdAndUserId(loan.getPocketId(), userId);
+        Pocket pocket = pocketUseCase.getPocketByIdAndUserId(loan.getPocketId());
         Long pocketId = pocket.getId();
         LoanType loanType = loan.getLoanType();
         String categoryName = loanType == LoanType.LENDER ? "He prestado" : "Me han prestado";
@@ -51,6 +51,7 @@ public class LoanUseCase implements ILoanServicePort {
         }
 
         loan.setStartDate(LocalDateTime.now());
+        loan.setBalance(loanAmount);
 
         Loan savedLoan = loanPersistencePort.saveLoan(loan);
 
@@ -66,5 +67,16 @@ public class LoanUseCase implements ILoanServicePort {
         transaction.setPocketId(pocketId);
 
         transactionUseCase.saveNewTransaction(transaction);
+    }
+
+    @Override
+    public List<Loan> getLoansByPocketId() {
+        Long userId = authenticationPort.getAuthenticatedUserId();
+        return loanPersistencePort.findAllLoans(userId);
+    }
+
+    @Override
+    public Loan getLoanDetails(Long loanId) {
+        return loanPersistencePort.findLoanDetails(loanId, authenticationPort.getAuthenticatedUserId());
     }
 }
