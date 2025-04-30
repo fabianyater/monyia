@@ -1,5 +1,6 @@
 package com.fyrdev.monyia.domain.api;
 
+import com.fyrdev.monyia.domain.model.LoanTransactionsResponse;
 import com.fyrdev.monyia.domain.model.Transaction;
 import com.fyrdev.monyia.domain.model.TransactionResponseSummary;
 import com.fyrdev.monyia.domain.model.TransactionSummaryByCategoriesResponse;
@@ -14,4 +15,5 @@ public interface ITransactionServicePort {
     BigDecimal getMonthlyExpense(Long pocketId);
     List<TransactionSummaryByCategoriesResponse> getTransactionSummaryByCategories(Long pocketId, TransactionType transactionType);
     List<TransactionResponseSummary> listTransactionsByCategory(Long pocketId, String transactionType, String categoryName);
+    List<LoanTransactionsResponse> findAllTransactionsByLoanId(Long loanId);
 }

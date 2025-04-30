@@ -88,6 +88,15 @@ public class TransactionUseCase implements ITransactionServicePort {
                 .toList();
     }
 
+    @Override
+    public List<LoanTransactionsResponse> findAllTransactionsByLoanId(Long loanId) {
+
+        return transactionPersistencePort.findAllTransactionsByLoanId(loanId)
+                .stream()
+                .sorted(Comparator.comparing(LoanTransactionsResponse::date).reversed())
+                .toList();
+    }
+
     private void updatePocketBalance(Pocket pocket, Double amount, TransactionType transactionType) {
         if (transactionType == TransactionType.EXPENSE) {
             pocketPersistencePort.updateBalanceById(pocket.getBalance() - amount, pocket.getId());
