@@ -21,8 +21,10 @@ public interface IPocketRepository extends JpaRepository<PocketEntity, Long> {
     List<PocketEntity> findByUserEntity_Id(Long id);
 
     PocketEntity findByBalance(Long balance);
-    @Query("select p from PocketEntity p where p.id = ?1")
-    PocketEntity findBalanceById(Long id);
+
+    @Query("select p.balance from PocketEntity p where p.id = ?1 and p.userEntity.id = ?2")
+    Double findBalanceById(Long id, Long userId);
+
     @Query("select sum(p.balance) from PocketEntity p where p.userEntity.id = ?1")
     Double sumByUserEntity_Id(Long id);
 }

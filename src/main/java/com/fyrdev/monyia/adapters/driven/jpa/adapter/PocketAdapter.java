@@ -35,11 +35,9 @@ public class PocketAdapter implements IPocketPersistencePort {
     }
 
     @Override
-    public Pocket getBalance(Long pocketId) {
+    public Double getBalance(Long pocketId, Long userId) {
         return pocketRepository
-                .findById(pocketId)
-                .map(pocketEntityMapper::toPocket)
-                .orElse(null);
+                .findBalanceById(pocketId, userId);
     }
 
     @Override
