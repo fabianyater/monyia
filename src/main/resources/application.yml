@@ -38,6 +38,6 @@ spring:
       on-profile: prod
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://db.cllynaxcuywshbpfvdge.supabase.co:5432/postgres
-    username: postgres
-    password: 20kzZPk01jXyyosY
+    url: ${DB_CONNECTION}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
