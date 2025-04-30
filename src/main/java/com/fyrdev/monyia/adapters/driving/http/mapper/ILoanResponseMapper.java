@@ -4,6 +4,7 @@ import com.fyrdev.monyia.adapters.driving.http.dto.response.LoanDetailResponse;
 import com.fyrdev.monyia.adapters.driving.http.dto.response.LoanResponse;
 import com.fyrdev.monyia.domain.model.Loan;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
         unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface ILoanResponseMapper {
     Loan toLoan(LoanResponse loanResponse);
+    @Mapping(target = "status", source = "loanStatus")
     LoanResponse toLoanResponse(Loan loan);
     LoanDetailResponse toLoanDetailResponse(Loan loan);
     List<LoanResponse> toLoanResponseList(List<Loan> loans);

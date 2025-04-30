@@ -1,5 +1,6 @@
 package com.fyrdev.monyia.adapters.driven.jpa.entity;
 
+import com.fyrdev.monyia.domain.model.enums.LoanStatus;
 import com.fyrdev.monyia.domain.model.enums.LoanType;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -31,6 +32,10 @@ public class LoanEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "loan_type", nullable = false)
     private LoanType loanType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "loan_status", nullable = false)
+    private LoanStatus loanStatus;
 
     @Column(nullable = false)
     private LocalDateTime startDate;

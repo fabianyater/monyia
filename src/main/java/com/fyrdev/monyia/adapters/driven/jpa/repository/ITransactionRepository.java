@@ -102,8 +102,11 @@ public interface ITransactionRepository extends JpaRepository<TransactionEntity,
             	t.pocket_entity_id = p.id
             where
             	l.id = :loanId
-            	and :loanType = 'BORROWER'
-            	and t.transaction_type = 'EXPENSE'
+            	and (
+                 		(:loanType = 'BORROWER' and t.transaction_type = 'EXPENSE')
+                 		or
+                 		(:loanType = 'LENDER' and t.transaction_type = 'INCOME')
+                 	)
             """, nativeQuery = true)
     List<Object[]> findLoanPaymentsByLoanIdAndType(
             @Param("loanId") Long loanId,
