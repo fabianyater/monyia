@@ -89,9 +89,9 @@ public class TransactionUseCase implements ITransactionServicePort {
     }
 
     @Override
-    public List<LoanTransactionsResponse> findAllTransactionsByLoanId(Long loanId) {
+    public List<LoanTransactionsResponse> findAllTransactionsByLoanId(Long loanId, String loanType) {
 
-        return transactionPersistencePort.findAllTransactionsByLoanId(loanId)
+        return transactionPersistencePort.findAllTransactionsByLoanId(loanId, loanType)
                 .stream()
                 .sorted(Comparator.comparing(LoanTransactionsResponse::date).reversed())
                 .toList();

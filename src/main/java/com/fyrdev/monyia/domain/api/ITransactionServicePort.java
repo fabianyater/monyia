@@ -15,5 +15,5 @@ public interface ITransactionServicePort {
     BigDecimal getMonthlyExpense(Long pocketId);
     List<TransactionSummaryByCategoriesResponse> getTransactionSummaryByCategories(Long pocketId, TransactionType transactionType);
     List<TransactionResponseSummary> listTransactionsByCategory(Long pocketId, String transactionType, String categoryName);
-    List<LoanTransactionsResponse> findAllTransactionsByLoanId(Long loanId);
+    List<LoanTransactionsResponse> findAllTransactionsByLoanId(Long loanId, String loanType);
 }
