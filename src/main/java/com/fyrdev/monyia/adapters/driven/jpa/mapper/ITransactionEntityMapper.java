@@ -14,6 +14,7 @@ import java.util.List;
 public interface ITransactionEntityMapper {
     @Mapping(target = "categoryEntity.id", source = "categoryId")
     @Mapping(target = "pocketEntity.id", source = "pocketId")
+    @Mapping(target = "loanEntity.id", source = "loanId")
     TransactionEntity toEntity(Transaction transaction);
 
     Transaction toTransaction(TransactionEntity transactionEntity);
