@@ -1,5 +1,6 @@
 package com.fyrdev.monyia.adapters.driven.jpa.adapter;
 
+import com.fyrdev.monyia.domain.model.LoanTransactionsResponse;
 import com.fyrdev.monyia.domain.model.TransactionResponseSummary;
 import com.fyrdev.monyia.adapters.driven.jpa.entity.TransactionEntity;
 import com.fyrdev.monyia.adapters.driven.jpa.mapper.ITransactionEntityMapper;
@@ -23,6 +24,11 @@ public class TransactionAdapter implements ITransactionPersistencePort {
     @Override
     public Transaction saveNewTransaction(Transaction transaction) {
         TransactionEntity transactionEntity = transactionEntityMapper.toEntity(transaction);
+
+        if (transaction.getLoanId() == null) {
+            transactionEntity.setLoanEntity(null); // Asignar explícitamente a null
+        }
+
         transactionRepository.save(transactionEntity);
 
         return transactionEntityMapper.toTransaction(transactionEntity);
@@ -70,6 +76,23 @@ public class TransactionAdapter implements ITransactionPersistencePort {
         ;
 
         return result;
+    }
+
+    @Override
+    public List<LoanTransactionsResponse> findAllTransactionsByLoanId(Long loanId) {
+
+        return transactionRepository
+                .findLoanTransactions(loanId)
+                .stream()
+                .map(obj -> new LoanTransactionsResponse(
+                        (Long) obj[0],
+                        (String) obj[1],
+                        (String) obj[2],
+                        (String) obj[3],
+                        ((BigDecimal) obj[4]).doubleValue(),
+                        ((Timestamp) obj[5]).toLocalDateTime().toString()
+                ))
+                .toList();
     }
 
     private LocalDateTime getStartOfMonth() {

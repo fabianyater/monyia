@@ -1,5 +1,6 @@
 package com.fyrdev.monyia.adapters.driven.jpa.repository;
 
+import com.fyrdev.monyia.domain.model.LoanTransactionsResponse;
 import com.fyrdev.monyia.domain.model.TransactionSummaryByCategoriesResponse;
 import com.fyrdev.monyia.adapters.driven.jpa.entity.TransactionEntity;
 import com.fyrdev.monyia.domain.model.enums.TransactionType;
@@ -82,4 +83,27 @@ public interface ITransactionRepository extends JpaRepository<TransactionEntity,
             @Param("categoryName") String categoryName
     );
 
+    @Query(value = """
+            select
+            	t.id,
+            	c.default_emoji,
+            	c.name as categoryName,
+            	p.name as pocketName,
+            	t.amount,
+            	t."date"
+            from
+            	loans l
+            inner join transactions t
+            on
+            	t.loan_entity_id = l.id
+            inner join categories c
+            on
+            	t.category_entity_id = c.id
+            inner join pocket p
+            on
+            	t.pocket_entity_id = p.id
+            where
+            	l.id = :loanId
+            """, nativeQuery = true)
+    List<Object[]> findLoanTransactions(@Param("loanId") Long loanId);
 }

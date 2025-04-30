@@ -17,6 +17,9 @@ public interface ITransactionEntityMapper {
     @Mapping(target = "loanEntity.id", source = "loanId")
     TransactionEntity toEntity(Transaction transaction);
 
+    @Mapping(target = "categoryId", source = "categoryEntity.id")
+    @Mapping(target = "pocketId", source = "pocketEntity.id")
+    @Mapping(target = "loanId", source = "loanEntity.id")
     Transaction toTransaction(TransactionEntity transactionEntity);
     List<Transaction> toTransactionList(List<TransactionEntity> transactionEntities);
 }
