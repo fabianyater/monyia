@@ -1,5 +1,6 @@
 package com.fyrdev.monyia.adapters.driving.http.controller;
 
+import com.fyrdev.monyia.adapters.driving.http.dto.request.LoanPaymentRequest;
 import com.fyrdev.monyia.adapters.driving.http.dto.request.LoanRequest;
 import com.fyrdev.monyia.adapters.driving.http.dto.request.PocketRequest;
 import com.fyrdev.monyia.adapters.driving.http.dto.response.LoanDetailResponse;
@@ -119,6 +120,30 @@ public class LoanController {
                 HttpStatus.OK.value(),
                 null,
                 transactions,
+                request.getRequestURI(),
+                System.currentTimeMillis()
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/payment")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<Void>> makePayment(
+            @Valid
+            @RequestBody
+            LoanPaymentRequest loanPaymentRequest,
+            HttpServletRequest request) {
+        Long loanId = loanPaymentRequest.loanId();
+        Long pocketId = loanPaymentRequest.pocketId();
+        Double amount = loanPaymentRequest.amount();
+
+        loanServicePort.makePayment(loanId, pocketId, amount);
+
+        ApiResponse<Void> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Pago realizado correctamente",
+                null,
                 request.getRequestURI(),
                 System.currentTimeMillis()
         );
