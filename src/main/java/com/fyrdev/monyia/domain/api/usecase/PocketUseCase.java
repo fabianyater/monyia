@@ -2,6 +2,7 @@ package com.fyrdev.monyia.domain.api.usecase;
 
 import com.fyrdev.monyia.configuration.exceptionhandler.ResourceNotFoundException;
 import com.fyrdev.monyia.domain.api.IPocketServicePort;
+import com.fyrdev.monyia.domain.exception.InsufficientBalanceException;
 import com.fyrdev.monyia.domain.model.Pocket;
 import com.fyrdev.monyia.domain.model.User;
 import com.fyrdev.monyia.domain.model.enums.TransactionType;
@@ -54,15 +55,22 @@ public class PocketUseCase implements IPocketServicePort {
     }
 
     @Override
-    public Pocket getBalance(Long pocketId) {
-        Long userId = authenticationPort.getAuthenticatedUserId();
+    public Pocket getPocketByIdAndUserId(Long pocketId, Long userId) {
         Pocket pocket = pocketPersistencePort.getPocketByIdAndUserId(pocketId, userId);
 
         if (pocket == null) {
             throw new ResourceNotFoundException(DomainConstants.POCKET_NOT_FOUND_MESSAGE);
         }
 
-        return pocketPersistencePort.getBalance(pocketId);
+        return pocket;
+    }
+
+    @Override
+    public Double getBalance(Long pocketId) {
+        Long userId = authenticationPort.getAuthenticatedUserId();
+        Pocket pocket = getPocketByIdAndUserId(pocketId, userId);
+
+        return pocketPersistencePort.getBalance(pocket.getId(), userId);
     }
 
     @Override
@@ -74,5 +82,12 @@ public class PocketUseCase implements IPocketServicePort {
     @Override
     public Double getTotalBalanceByUserId() {
         return pocketPersistencePort.getTotalBalanceByUserId(authenticationPort.getAuthenticatedUserId());
+    }
+
+    @Override
+    public boolean isPocketBalanceSufficient(Long pocketId, Double amount) {
+        Double currentBalance = getBalance(pocketId);
+
+        return currentBalance >= amount;
     }
 }
