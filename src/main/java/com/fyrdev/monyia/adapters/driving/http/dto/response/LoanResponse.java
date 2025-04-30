@@ -1,4 +1,6 @@
 package com.fyrdev.monyia.adapters.driving.http.dto.response;
 
-public record LoanResponse(Long id, String loanParty, String description, Long amount, String loanType) {
+import com.fyrdev.monyia.domain.model.enums.LoanStatus;
+
+public record LoanResponse(Long id, String loanParty, String description, Long amount, String loanType, Double balance, LoanStatus status) {
 }
