@@ -8,7 +8,7 @@ import java.util.List;
 public interface IPocketServicePort {
     void saveNewPocket(Pocket pocket);
     void saveNewPocket(Pocket pocket, Long userId);
-    Pocket getPocketByIdAndUserId(Long pocketId, Long userId);
+    Pocket getPocketByIdAndUserId(Long pocketId);
     Double getBalance(Long pocketId);
     List<Pocket> getPockets();
     Double getTotalBalanceByUserId();
