@@ -57,12 +57,12 @@ public class PocketController {
     @GetMapping("/{pocketId}/balance")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<Double>> getBalance(@PathVariable("pocketId") Long pocketId, HttpServletRequest request) {
-        Pocket pocket = pocketServicePort.getBalance(pocketId);
+        Double balance = pocketServicePort.getBalance(pocketId);
 
         ApiResponse<Double> response = new ApiResponse<>(
                 HttpStatus.OK.value(),
                 null,
-                pocket.getBalance().doubleValue(),
+                balance,
                 request.getRequestURI(),
                 System.currentTimeMillis()
         );
