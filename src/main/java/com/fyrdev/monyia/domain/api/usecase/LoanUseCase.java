@@ -41,7 +41,7 @@ public class LoanUseCase implements ILoanServicePort {
         Pocket pocket = pocketUseCase.getPocketByIdAndUserId(loan.getPocketId());
         Long pocketId = pocket.getId();
         LoanType loanType = loan.getLoanType();
-        String categoryName = loanType == LoanType.LENDER ? "He prestado" : "Me han prestado";
+        String categoryName = loanType == LoanType.LENDER ? "Cobrar" : "Reembolsar";
         Category existingCategory = categoryUseCase.getCategoryByName(categoryName);
 
         if (loanType.equals(LoanType.LENDER)) {
