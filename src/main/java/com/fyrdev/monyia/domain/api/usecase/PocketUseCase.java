@@ -55,7 +55,8 @@ public class PocketUseCase implements IPocketServicePort {
     }
 
     @Override
-    public Pocket getPocketByIdAndUserId(Long pocketId, Long userId) {
+    public Pocket getPocketByIdAndUserId(Long pocketId) {
+        Long userId = authenticationPort.getAuthenticatedUserId();
         Pocket pocket = pocketPersistencePort.getPocketByIdAndUserId(pocketId, userId);
 
         if (pocket == null) {
@@ -68,7 +69,7 @@ public class PocketUseCase implements IPocketServicePort {
     @Override
     public Double getBalance(Long pocketId) {
         Long userId = authenticationPort.getAuthenticatedUserId();
-        Pocket pocket = getPocketByIdAndUserId(pocketId, userId);
+        Pocket pocket = getPocketByIdAndUserId(pocketId);
 
         return pocketPersistencePort.getBalance(pocket.getId(), userId);
     }
