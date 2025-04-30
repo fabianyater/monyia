@@ -8,4 +8,5 @@ public interface ILoanServicePort {
     void saveLoan(Loan loan);
     List<Loan> getLoansByPocketId();
     Loan getLoanDetails(Long loanId);
+    void makePayment(Long loanId, Long pocketId, Double amount);
 }

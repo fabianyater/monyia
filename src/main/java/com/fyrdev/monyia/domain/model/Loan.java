@@ -1,5 +1,6 @@
 package com.fyrdev.monyia.domain.model;
 
+import com.fyrdev.monyia.domain.model.enums.LoanStatus;
 import com.fyrdev.monyia.domain.model.enums.LoanType;
 
 import java.time.LocalDateTime;
@@ -12,12 +13,22 @@ public class Loan {
     private String description;
     private LoanType loanType;
     private LocalDateTime startDate;
+    private LoanStatus loanStatus;
     private Long pocketId;
 
     public Loan() {
     }
 
-    public Loan(Long id, Double amount, Double balance, String loanParty, String description, LoanType loanType, LocalDateTime startDate, Long pocketId) {
+    public Loan(
+            Long id,
+            Double amount,
+            Double balance,
+            String loanParty,
+            String description,
+            LoanType loanType,
+            LocalDateTime startDate,
+            LoanStatus loanStatus,
+            Long pocketId) {
         this.id = id;
         this.amount = amount;
         this.balance = balance;
@@ -25,6 +36,7 @@ public class Loan {
         this.description = description;
         this.loanType = loanType;
         this.startDate = startDate;
+        this.loanStatus = loanStatus;
         this.pocketId = pocketId;
     }
 
@@ -82,6 +94,14 @@ public class Loan {
 
     public void setStartDate(LocalDateTime startDate) {
         this.startDate = startDate;
+    }
+
+    public LoanStatus getLoanStatus() {
+        return loanStatus;
+    }
+
+    public void setLoanStatus(LoanStatus loanStatus) {
+        this.loanStatus = loanStatus;
     }
 
     public Long getPocketId() {
