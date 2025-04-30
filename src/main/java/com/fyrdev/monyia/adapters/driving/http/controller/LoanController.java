@@ -107,12 +107,13 @@ public class LoanController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @GetMapping("/{loanId}/transactions")
+    @GetMapping("/{loanId}/type/{loanType}/transactions")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<List<LoanTransactionsResponse>>> getTransactionsByLoanId(
             @PathVariable Long loanId,
+            @PathVariable String loanType,
             HttpServletRequest request) {
-        List<LoanTransactionsResponse> transactions = transactionServicePort.findAllTransactionsByLoanId(loanId);
+        List<LoanTransactionsResponse> transactions = transactionServicePort.findAllTransactionsByLoanId(loanId, loanType);
 
         ApiResponse<List<LoanTransactionsResponse>> response = new ApiResponse<>(
                 HttpStatus.OK.value(),
