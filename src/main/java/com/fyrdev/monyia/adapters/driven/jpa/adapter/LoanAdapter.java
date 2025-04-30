@@ -7,6 +7,8 @@ import com.fyrdev.monyia.domain.model.Loan;
 import com.fyrdev.monyia.domain.spi.ILoanPersistencePort;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 public class LoanAdapter implements ILoanPersistencePort {
     private final ILoanRepository loanRepository;
@@ -18,5 +20,20 @@ public class LoanAdapter implements ILoanPersistencePort {
         LoanEntity savedLoanEntity = loanRepository.save(loanEntity);
 
         return loanEntityMapper.toLoan(savedLoanEntity);
+    }
+
+    @Override
+    public List<Loan> findAllLoans(Long userId) {
+        return loanRepository.findAllLoansByUserId(userId)
+                .stream()
+                .map(loanEntityMapper::toLoan)
+                .toList();
+    }
+
+    @Override
+    public Loan findLoanDetails(Long loanId, Long userId) {
+        return loanRepository.findLoanDetailsByLoanIdAndUserId(loanId, userId)
+                .map(loanEntityMapper::toLoan)
+                .orElse(null);
     }
 }

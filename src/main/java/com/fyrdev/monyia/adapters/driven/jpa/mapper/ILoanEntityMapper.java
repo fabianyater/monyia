@@ -10,6 +10,7 @@ import org.mapstruct.ReportingPolicy;
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface ILoanEntityMapper {
+    @Mapping(target = "pocketId", source = "pocketEntity.id")
     Loan toLoan(LoanEntity loanEntity);
 
     @Mapping(target = "pocketEntity.id", source = "pocketId")
