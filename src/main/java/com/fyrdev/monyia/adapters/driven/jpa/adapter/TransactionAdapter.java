@@ -79,10 +79,10 @@ public class TransactionAdapter implements ITransactionPersistencePort {
     }
 
     @Override
-    public List<LoanTransactionsResponse> findAllTransactionsByLoanId(Long loanId) {
+    public List<LoanTransactionsResponse> findAllTransactionsByLoanId(Long loanId, String loanType) {
 
         return transactionRepository
-                .findLoanTransactions(loanId)
+                .findLoanPaymentsByLoanIdAndType(loanId, loanType)
                 .stream()
                 .map(obj -> new LoanTransactionsResponse(
                         (Long) obj[0],

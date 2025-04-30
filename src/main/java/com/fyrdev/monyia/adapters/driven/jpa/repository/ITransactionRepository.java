@@ -1,7 +1,5 @@
 package com.fyrdev.monyia.adapters.driven.jpa.repository;
 
-import com.fyrdev.monyia.domain.model.LoanTransactionsResponse;
-import com.fyrdev.monyia.domain.model.TransactionSummaryByCategoriesResponse;
 import com.fyrdev.monyia.adapters.driven.jpa.entity.TransactionEntity;
 import com.fyrdev.monyia.domain.model.enums.TransactionType;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -104,6 +102,11 @@ public interface ITransactionRepository extends JpaRepository<TransactionEntity,
             	t.pocket_entity_id = p.id
             where
             	l.id = :loanId
+            	and :loanType = 'BORROWER'
+            	and t.transaction_type = 'EXPENSE'
             """, nativeQuery = true)
-    List<Object[]> findLoanTransactions(@Param("loanId") Long loanId);
+    List<Object[]> findLoanPaymentsByLoanIdAndType(
+            @Param("loanId") Long loanId,
+            @Param("loanType") String loanType
+    );
 }
