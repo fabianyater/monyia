@@ -15,10 +15,14 @@ import java.util.List;
         unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface ITransactionResponseMapper {
 
+    @Mapping(target = "value", source = "amount")
     TransactionResponse toTransactionResponse(Transaction transaction);
 
     @Mapping(target = "value", source = "amount")
     @Mapping(target = "category", source = "categoryName")
     TransactionResponse toTransactionResponse(TransactionResponseSummary transactionResponseSummary);
     List<TransactionResponse> toTransactionResponseList(List<TransactionResponseSummary> transactions);
+
+    List<TransactionResponse> toTransactionResponseModelList(List<Transaction> transactions);
+
 }

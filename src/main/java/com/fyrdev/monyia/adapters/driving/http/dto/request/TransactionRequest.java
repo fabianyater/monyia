@@ -41,4 +41,5 @@ public class TransactionRequest {
     @NotNull(message = "Transaction pocket id cannot be empty")
     @NumberFormat(style = NumberFormat.Style.NUMBER)
     private Long pocketId;
+    private Long loanId;
 }
