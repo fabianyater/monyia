@@ -8,6 +8,7 @@ public class DomainConstants {
 
 
     public static final String EMAIL_ALREADY_EXISTS_MESSAGE = "El correo ya existe";
+    public static final String INSUFFICIENT_BALANCE_MESSAGE = "Saldo insuficiente";
     public static final String USER_SUCCESSFULLY_REGISTERED_MESSAGE = "Registro exitoso. Por favor, inicie sesión";
     public static final String USER_SUCCESSFULLY_LOGGED_MESSAGE = "Sesión exitosa";
     public static final String USER_ID = "userId";
