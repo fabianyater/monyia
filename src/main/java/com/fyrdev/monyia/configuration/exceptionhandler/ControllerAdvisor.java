@@ -2,6 +2,7 @@ package com.fyrdev.monyia.configuration.exceptionhandler;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fyrdev.monyia.domain.exception.AlreadyExistsException;
+import com.fyrdev.monyia.domain.exception.InsufficientBalanceException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,18 @@ public class ControllerAdvisor {
                 System.currentTimeMillis()
         );
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
+    @ExceptionHandler(InsufficientBalanceException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInsufficientBalanceException(InsufficientBalanceException ex, HttpServletRequest request) {
+        ApiResponse<Void> response = new ApiResponse<>(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage(),
+                null,
+                request.getRequestURI(),
+                System.currentTimeMillis()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
