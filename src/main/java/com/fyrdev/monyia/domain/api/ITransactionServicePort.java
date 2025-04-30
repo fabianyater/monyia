@@ -1,6 +1,5 @@
 package com.fyrdev.monyia.domain.api;
 
-import com.fyrdev.monyia.domain.model.CustomPageable;
 import com.fyrdev.monyia.domain.model.Transaction;
 import com.fyrdev.monyia.domain.model.TransactionResponseSummary;
 import com.fyrdev.monyia.domain.model.TransactionSummaryByCategoriesResponse;
