@@ -28,6 +28,8 @@ public class BeanConfiguration {
     private final ITransactionEntityMapper transactionEntityMapper;
     private final ILoanRepository loanRepository;
     private final ILoanEntityMapper loanEntityMapper;
+    private final IGoalRepository goalRepository;
+    private final IGoalEntityMapper goalEntityMapper;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final BCryptPasswordEncoder passwordEncoder;
@@ -99,7 +101,11 @@ public class BeanConfiguration {
 
     @Bean
     public ITransactionServicePort transactionServicePort() {
-        return new TransactionUseCase(transactionPersistencePort(), pocketPersistencePort(), authenticationPort(), categoryPersistencePort());
+        return new TransactionUseCase(
+                transactionPersistencePort(),
+                pocketPersistencePort(),
+                authenticationPort(),
+                categoryPersistencePort());
     }
 
     @Bean
@@ -108,26 +114,27 @@ public class BeanConfiguration {
     }
 
     @Bean
-    public PocketUseCase pocketUseCase() {
-        return new PocketUseCase(pocketPersistencePort(), authenticationPort(), aiTextClassifierPort());
-    }
-
-    @Bean
-    public TransactionUseCase transactionUseCase() {
-        return new TransactionUseCase(transactionPersistencePort(), pocketPersistencePort(), authenticationPort(), categoryPersistencePort());
-    }
-
-    @Bean
-    public CategoryUseCase categoryUseCase() {
-        return new CategoryUseCase(categoryPersistencePort(), authenticationPort(), aiTextClassifierPort());
-    }
-
-    @Bean
     public ILoanServicePort loanServicePort() {
-        return new LoanUseCase(authenticationPort(),
+        return new LoanUseCase(
+                authenticationPort(),
                 loanPersistencePort(),
-                pocketUseCase(),
-                transactionUseCase(),
-                categoryUseCase());
+                pocketServicePort(),
+                categoryServicePort(),
+                transactionServicePort());
+    }
+
+    @Bean
+    public IGoalPersistencePort goalPersistencePort() {
+        return new GoalAdapter(goalRepository, goalEntityMapper);
+    }
+
+    @Bean
+    public IGoalServicePort goalServicePort() {
+        return new GoalUseCase(
+                goalPersistencePort(),
+                authenticationPort(),
+                aiTextClassifierPort(),
+                transactionServicePort(),
+                categoryServicePort());
     }
 }
