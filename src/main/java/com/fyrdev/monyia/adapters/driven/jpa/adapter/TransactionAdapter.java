@@ -1,12 +1,13 @@
 package com.fyrdev.monyia.adapters.driven.jpa.adapter;
 
-import com.fyrdev.monyia.domain.model.LoanTransactionsResponse;
-import com.fyrdev.monyia.domain.model.TransactionResponseSummary;
+import com.fyrdev.monyia.domain.model.dto.GoalTransactionsResponse;
+import com.fyrdev.monyia.domain.model.dto.LoanTransactionsResponse;
+import com.fyrdev.monyia.domain.model.dto.TransactionResponseSummary;
 import com.fyrdev.monyia.adapters.driven.jpa.entity.TransactionEntity;
 import com.fyrdev.monyia.adapters.driven.jpa.mapper.ITransactionEntityMapper;
 import com.fyrdev.monyia.adapters.driven.jpa.repository.ITransactionRepository;
 import com.fyrdev.monyia.domain.model.Transaction;
-import com.fyrdev.monyia.domain.model.TransactionSummaryByCategoriesResponse;
+import com.fyrdev.monyia.domain.model.dto.TransactionSummaryByCategoriesResponse;
 import com.fyrdev.monyia.domain.model.enums.TransactionType;
 import com.fyrdev.monyia.domain.spi.ITransactionPersistencePort;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,14 @@ public class TransactionAdapter implements ITransactionPersistencePort {
 
         if (transaction.getLoanId() == null) {
             transactionEntity.setLoanEntity(null); // Asignar explícitamente a null
+        }
+
+        if (transaction.getGoalId() == null) {
+            transactionEntity.setLoanEntity(null);
+        }
+
+        if (transaction.getPocketId() == null) {
+            transactionEntity.setPocketEntity(null);
         }
 
         transactionRepository.save(transactionEntity);
@@ -72,8 +81,7 @@ public class TransactionAdapter implements ITransactionPersistencePort {
                         (String) obj[4],
                         (String) obj[5]
                 ))
-                .toList()
-        ;
+                .toList();
 
         return result;
     }
@@ -91,6 +99,22 @@ public class TransactionAdapter implements ITransactionPersistencePort {
                         (String) obj[3],
                         ((BigDecimal) obj[4]).doubleValue(),
                         ((Timestamp) obj[5]).toLocalDateTime().toString()
+                ))
+                .toList();
+    }
+
+    @Override
+    public List<GoalTransactionsResponse> findAllTransactionsByGoalId(Long goalId, Long userId) {
+        return transactionRepository.findGoalTransactionByGoalId(goalId, userId)
+                .stream()
+                .map(obj -> new GoalTransactionsResponse(
+                        (Long) obj[0],
+                        (String) obj[1],
+                        (String) obj[2],
+                        (String) obj[3],
+                        ((BigDecimal) obj[4]).doubleValue(),
+                        ((Timestamp) obj[5]).toLocalDateTime().toString(),
+                        (String) obj[6]
                 ))
                 .toList();
     }

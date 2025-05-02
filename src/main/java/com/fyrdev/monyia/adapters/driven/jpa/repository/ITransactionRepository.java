@@ -112,4 +112,27 @@ public interface ITransactionRepository extends JpaRepository<TransactionEntity,
             @Param("loanId") Long loanId,
             @Param("loanType") String loanType
     );
+
+    @Query(value = """
+            select
+            	t.id,
+                ge.name,
+            	c.default_emoji,
+            	c."name" as "categoryName",
+            	t.amount,
+            	t."date",
+            	t.transaction_type
+            from
+            	goal_entity ge
+            inner join transactions t
+            on
+            	t.goal_entity_id = ge.id
+            inner join categories c
+            on
+            	t.category_entity_id = c.id
+            where
+            	ge.id = :goalId
+            	and ge.user_entity_id = :userId
+            """, nativeQuery = true)
+    List<Object[]> findGoalTransactionByGoalId(@Param("goalId") Long goalId, @Param("userId") Long userId);
 }

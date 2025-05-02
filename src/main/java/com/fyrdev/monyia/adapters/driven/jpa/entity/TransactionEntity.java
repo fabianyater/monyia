@@ -60,4 +60,8 @@ public class TransactionEntity {
     @JoinColumn(name = "loan_entity_id")
     private LoanEntity loanEntity;
 
+    @ManyToOne
+    @JoinColumn(name = "goal_entity_id")
+    private GoalEntity goalEntity;
+
 }
