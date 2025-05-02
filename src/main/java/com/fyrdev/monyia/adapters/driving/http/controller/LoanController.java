@@ -2,10 +2,8 @@ package com.fyrdev.monyia.adapters.driving.http.controller;
 
 import com.fyrdev.monyia.adapters.driving.http.dto.request.LoanPaymentRequest;
 import com.fyrdev.monyia.adapters.driving.http.dto.request.LoanRequest;
-import com.fyrdev.monyia.adapters.driving.http.dto.request.PocketRequest;
 import com.fyrdev.monyia.adapters.driving.http.dto.response.LoanDetailResponse;
 import com.fyrdev.monyia.adapters.driving.http.dto.response.LoanResponse;
-import com.fyrdev.monyia.adapters.driving.http.dto.response.TransactionResponse;
 import com.fyrdev.monyia.adapters.driving.http.mapper.ILoanRequestMapper;
 import com.fyrdev.monyia.adapters.driving.http.mapper.ILoanResponseMapper;
 import com.fyrdev.monyia.adapters.driving.http.mapper.ITransactionResponseMapper;
@@ -13,8 +11,7 @@ import com.fyrdev.monyia.configuration.exceptionhandler.ApiResponse;
 import com.fyrdev.monyia.domain.api.ILoanServicePort;
 import com.fyrdev.monyia.domain.api.IPocketServicePort;
 import com.fyrdev.monyia.domain.api.ITransactionServicePort;
-import com.fyrdev.monyia.domain.model.LoanTransactionsResponse;
-import com.fyrdev.monyia.domain.model.Transaction;
+import com.fyrdev.monyia.domain.model.dto.LoanTransactionsResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController
