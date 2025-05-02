@@ -7,9 +7,7 @@ import com.fyrdev.monyia.adapters.driving.http.mapper.ITransactionResponseMapper
 import com.fyrdev.monyia.configuration.exceptionhandler.ApiResponse;
 import com.fyrdev.monyia.domain.api.ICategoryServicePort;
 import com.fyrdev.monyia.domain.api.ITransactionServicePort;
-import com.fyrdev.monyia.domain.model.Category;
-import com.fyrdev.monyia.domain.model.Transaction;
-import com.fyrdev.monyia.domain.model.TransactionSummaryByCategoriesResponse;
+import com.fyrdev.monyia.domain.model.dto.TransactionSummaryByCategoriesResponse;
 import com.fyrdev.monyia.domain.model.enums.TransactionType;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -21,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.math.BigDecimal;
-import java.net.URI;
 import java.util.List;
 
 @RestController
