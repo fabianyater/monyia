@@ -3,6 +3,10 @@ package com.fyrdev.monyia.domain.api.usecase;
 import com.fyrdev.monyia.domain.api.ITransactionServicePort;
 import com.fyrdev.monyia.domain.exception.PocketNotFoundExceptiont;
 import com.fyrdev.monyia.domain.model.*;
+import com.fyrdev.monyia.domain.model.dto.GoalTransactionsResponse;
+import com.fyrdev.monyia.domain.model.dto.LoanTransactionsResponse;
+import com.fyrdev.monyia.domain.model.dto.TransactionResponseSummary;
+import com.fyrdev.monyia.domain.model.dto.TransactionSummaryByCategoriesResponse;
 import com.fyrdev.monyia.domain.model.enums.TransactionType;
 import com.fyrdev.monyia.domain.spi.IAuthenticationPort;
 import com.fyrdev.monyia.domain.spi.ICategoryPersistencePort;
@@ -23,7 +27,8 @@ public class TransactionUseCase implements ITransactionServicePort {
 
     public TransactionUseCase(ITransactionPersistencePort transactionPersistencePort,
                               IPocketPersistencePort pocketPersistencePort,
-                              IAuthenticationPort authenticationPort, ICategoryPersistencePort categoryPersistencePort) {
+                              IAuthenticationPort authenticationPort,
+                              ICategoryPersistencePort categoryPersistencePort) {
         this.transactionPersistencePort = transactionPersistencePort;
         this.pocketPersistencePort = pocketPersistencePort;
         this.authenticationPort = authenticationPort;
@@ -33,21 +38,20 @@ public class TransactionUseCase implements ITransactionServicePort {
     @Override
     public Transaction saveNewTransaction(Transaction transaction) {
         Long userId = authenticationPort.getAuthenticatedUserId();
-
-        Pocket pocket = pocketPersistencePort.getPocketByIdAndUserId(transaction.getPocketId(), userId);
-
-        if (pocket == null) {
-            throw new PocketNotFoundExceptiont(DomainConstants.POCKET_NOT_FOUND_MESSAGE);
-        }
-
         TransactionType type = transaction.getTransactionType();
 
         if (transaction.getUuid() == null) {
             transaction.setUuid(UUID.randomUUID());
         }
 
-        transaction.setPocketId(pocket.getId());
-        updatePocketBalance(pocket, transaction.getAmount(), type);
+        if (transaction.getPocketId() != null) {
+            Pocket pocket = pocketPersistencePort.getPocketByIdAndUserId(transaction.getPocketId(), userId);
+            if (pocket == null) {
+                throw new PocketNotFoundExceptiont(DomainConstants.POCKET_NOT_FOUND_MESSAGE);
+            }
+            transaction.setPocketId(pocket.getId());
+            updatePocketBalance(pocket, transaction.getAmount(), type);
+        }
 
         return transactionPersistencePort.saveNewTransaction(transaction);
     }
@@ -94,6 +98,15 @@ public class TransactionUseCase implements ITransactionServicePort {
         return transactionPersistencePort.findAllTransactionsByLoanId(loanId, loanType)
                 .stream()
                 .sorted(Comparator.comparing(LoanTransactionsResponse::date).reversed())
+                .toList();
+    }
+
+    @Override
+    public List<GoalTransactionsResponse> findAllTransactionsByGoalId(Long goalId) {
+        Long userId = authenticationPort.getAuthenticatedUserId();
+        return transactionPersistencePort.findAllTransactionsByGoalId(goalId, userId)
+                .stream()
+                .sorted(Comparator.comparing(GoalTransactionsResponse::date).reversed())
                 .toList();
     }
 
