@@ -1,7 +1,10 @@
 package com.fyrdev.monyia.domain.api.usecase;
 
 import com.fyrdev.monyia.configuration.exceptionhandler.ResourceNotFoundException;
+import com.fyrdev.monyia.domain.api.ICategoryServicePort;
 import com.fyrdev.monyia.domain.api.ILoanServicePort;
+import com.fyrdev.monyia.domain.api.IPocketServicePort;
+import com.fyrdev.monyia.domain.api.ITransactionServicePort;
 import com.fyrdev.monyia.domain.exception.InsufficientBalanceException;
 import com.fyrdev.monyia.domain.model.Category;
 import com.fyrdev.monyia.domain.model.Loan;
@@ -21,33 +24,34 @@ import java.util.List;
 public class LoanUseCase implements ILoanServicePort {
     private final IAuthenticationPort authenticationPort;
     private final ILoanPersistencePort loanPersistencePort;
-    private final PocketUseCase pocketUseCase;
-    private final TransactionUseCase transactionUseCase;
-    private final CategoryUseCase categoryUseCase;
+    private final IPocketServicePort pocketServicePort;
+    private final ICategoryServicePort categoryServicePort;
+    private final ITransactionServicePort transactionServicePort;
 
     public LoanUseCase(IAuthenticationPort authenticationPort,
                        ILoanPersistencePort loanPersistencePort,
-                       PocketUseCase pocketUseCase,
-                       TransactionUseCase transactionUseCase,
-                       CategoryUseCase categoryUseCase) {
+                       IPocketServicePort pocketServicePort,
+                       ICategoryServicePort categoryServicePort, 
+                       ITransactionServicePort transactionServicePort) {
         this.authenticationPort = authenticationPort;
         this.loanPersistencePort = loanPersistencePort;
-        this.pocketUseCase = pocketUseCase;
-        this.transactionUseCase = transactionUseCase;
-        this.categoryUseCase = categoryUseCase;
+        this.pocketServicePort = pocketServicePort;
+        this.categoryServicePort = categoryServicePort;
+        this.transactionServicePort = transactionServicePort;
     }
+
 
     @Override
     public void saveLoan(Loan loan) {
         Double loanAmount = loan.getAmount();
-        Pocket pocket = pocketUseCase.getPocketByIdAndUserId(loan.getPocketId());
+        Pocket pocket = pocketServicePort.getPocketByIdAndUserId(loan.getPocketId());
         Long pocketId = pocket.getId();
         LoanType loanType = loan.getLoanType();
         String categoryName = loanType == LoanType.LENDER ? "Cobrar" : "Reembolsar";
-        Category existingCategory = categoryUseCase.getCategoryByName(categoryName);
+        Category existingCategory = categoryServicePort.getCategoryByName(categoryName);
 
         if (loanType.equals(LoanType.LENDER)) {
-            if (!pocketUseCase.isPocketBalanceSufficient(pocketId, loanAmount)) {
+            if (!pocketServicePort.isPocketBalanceSufficient(pocketId, loanAmount)) {
                 throw new InsufficientBalanceException(DomainConstants.INSUFFICIENT_BALANCE_MESSAGE);
             }
         }
@@ -69,7 +73,7 @@ public class LoanUseCase implements ILoanServicePort {
         transaction.setLoanId(savedLoan.getId());
         transaction.setPocketId(pocketId);
 
-        transactionUseCase.saveNewTransaction(transaction);
+        transactionServicePort.saveNewTransaction(transaction);
     }
 
     @Override
@@ -99,12 +103,12 @@ public class LoanUseCase implements ILoanServicePort {
         }
 
         String categoryName = loan.getLoanType() == LoanType.LENDER ? "Cobrar" : "Reembolsar";
-        Pocket pocket = pocketUseCase.getPocketByIdAndUserId(pocketId);
-        Category category = categoryUseCase.getCategoryByName(categoryName);
+        Pocket pocket = pocketServicePort.getPocketByIdAndUserId(pocketId);
+        Category category = categoryServicePort.getCategoryByName(categoryName);
         Long existingPocketId = pocket.getId();
 
         if (loan.getLoanType().equals(LoanType.BORROWER)) {
-            if (!pocketUseCase.isPocketBalanceSufficient(existingPocketId, amount)) {
+            if (!pocketServicePort.isPocketBalanceSufficient(existingPocketId, amount)) {
                 throw new InsufficientBalanceException(DomainConstants.INSUFFICIENT_BALANCE_MESSAGE);
             }
         }
@@ -127,6 +131,6 @@ public class LoanUseCase implements ILoanServicePort {
         transaction.setLoanId(loan.getId());
         transaction.setPocketId(pocketId);
 
-        transactionUseCase.saveNewTransaction(transaction);
+        transactionServicePort.saveNewTransaction(transaction);
     }
 }
