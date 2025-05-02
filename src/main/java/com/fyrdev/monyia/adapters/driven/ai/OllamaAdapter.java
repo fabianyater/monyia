@@ -3,16 +3,13 @@ package com.fyrdev.monyia.adapters.driven.ai;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fyrdev.monyia.domain.model.Category;
-import com.fyrdev.monyia.domain.model.ClassificationResult;
+import com.fyrdev.monyia.domain.model.dto.ClassificationResult;
 import com.fyrdev.monyia.domain.spi.AITextClassifierPort;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 @RequiredArgsConstructor
 public class OllamaAdapter implements AITextClassifierPort {
