@@ -1,7 +1,7 @@
 package com.fyrdev.monyia.adapters.driving.http.mapper;
 
 import com.fyrdev.monyia.adapters.driving.http.dto.response.ClassificationResponse;
-import com.fyrdev.monyia.domain.model.ClassificationResult;
+import com.fyrdev.monyia.domain.model.dto.ClassificationResult;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 

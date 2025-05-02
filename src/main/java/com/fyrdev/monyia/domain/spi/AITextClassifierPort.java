@@ -1,9 +1,7 @@
 package com.fyrdev.monyia.domain.spi;
 
-import com.fyrdev.monyia.domain.model.ClassificationResult;
-import com.fyrdev.monyia.domain.model.EmojiSuggestion;
+import com.fyrdev.monyia.domain.model.dto.ClassificationResult;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface AITextClassifierPort {

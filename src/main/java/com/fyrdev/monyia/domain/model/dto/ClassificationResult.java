@@ -1,6 +1,6 @@
-package com.fyrdev.monyia.domain.model;
+package com.fyrdev.monyia.domain.model.dto;
 
-import java.math.BigDecimal;
+import com.fyrdev.monyia.domain.model.Category;
 
 public record ClassificationResult(
         String date,

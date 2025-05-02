@@ -3,10 +3,9 @@ package com.fyrdev.monyia.domain.api.usecase;
 import com.fyrdev.monyia.domain.api.AiTextClassifierServicePort;
 import com.fyrdev.monyia.domain.api.ICategoryServicePort;
 import com.fyrdev.monyia.domain.model.Category;
-import com.fyrdev.monyia.domain.model.ClassificationResult;
+import com.fyrdev.monyia.domain.model.dto.ClassificationResult;
 import com.fyrdev.monyia.domain.spi.AITextClassifierPort;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class AiClassifierUseCase implements AiTextClassifierServicePort {

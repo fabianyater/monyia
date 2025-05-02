@@ -1,4 +1,4 @@
-package com.fyrdev.monyia.domain.model;
+package com.fyrdev.monyia.domain.model.dto;
 
 public record LoanTransactionsResponse(
         Long id,
