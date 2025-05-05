@@ -133,7 +133,7 @@ public class PocketUseCase implements IPocketServicePort {
         transaction.setPocketId(isFromPocket ? fromPocket.getId() : toPocket.getId());
         transaction.setToPocketId(isFromPocket ? toPocket.getId() : null);
         transaction.setAmount(amount);
-        transaction.setTransactionType(TransactionType.TRANSFER);
+        transaction.setTransactionType(isFromPocket ? TransactionType.EXPENSE : TransactionType.INCOME);
         transaction.setDate(LocalDateTime.now());
         transaction.setDescription(setDescription(isFromPocket ? toPocket.getName() : fromPocket.getName(), isFromPocket));
         transaction.setUuid(UUID.randomUUID());
