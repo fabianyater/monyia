@@ -15,6 +15,7 @@ import com.fyrdev.monyia.domain.spi.ITransactionPersistencePort;
 import com.fyrdev.monyia.domain.util.DomainConstants;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -50,7 +51,10 @@ public class TransactionUseCase implements ITransactionServicePort {
                 throw new PocketNotFoundExceptiont(DomainConstants.POCKET_NOT_FOUND_MESSAGE);
             }
             transaction.setPocketId(pocket.getId());
-            updatePocketBalance(pocket, transaction.getAmount(), type);
+
+            if (type != TransactionType.TRANSFER) {
+                updatePocketBalance(pocket, transaction.getAmount(), type);
+            }
         }
 
         return transactionPersistencePort.saveNewTransaction(transaction);
@@ -81,15 +85,25 @@ public class TransactionUseCase implements ITransactionServicePort {
     }
 
     @Override
-    public List<TransactionResponseSummary> listTransactionsByCategory(Long pocketId, String transactionType, String categoryName) {
+    public List<TransactionResponseSummary> listTransactionsByCategory(Long pocketId, TransactionType transactionType, String categoryName, LocalDate startDate, LocalDate endDate) {
         Long userId = authenticationPort.getAuthenticatedUserId();
         Category category = categoryPersistencePort.getCategoryByName(categoryName, userId);
 
-        return transactionPersistencePort
+        var result = transactionPersistencePort
                 .listTransactionsByCategory(pocketId, userId, category.getId(), transactionType, categoryName)
                 .stream()
                 .sorted(Comparator.comparing(TransactionResponseSummary::date).reversed())
                 .toList();
+
+        if (startDate != null && endDate != null) {
+            return result.stream()
+                    .filter(txn ->
+                            !txn.date().isBefore(startDate) &&
+                            !txn.date().isAfter(endDate))
+                    .toList();
+        }
+
+        return result;
     }
 
     @Override

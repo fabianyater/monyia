@@ -16,13 +16,14 @@ public class Transaction {
     private TransactionType transactionType;
     private Long categoryId;
     private Long pocketId;
+    private Long toPocketId;
     private Long loanId;
     private Long goalId;
 
     public Transaction() {
     }
 
-    public Transaction(Long id, UUID uuid, String description, Double amount, LocalDateTime date, Periodicity periodicity, TransactionType transactionType, Long categoryId, Long pocketId, Long loanId, Long goalId) {
+    public Transaction(Long id, UUID uuid, String description, Double amount, LocalDateTime date, Periodicity periodicity, TransactionType transactionType, Long categoryId, Long pocketId, Long toPocketId, Long loanId, Long goalId) {
         this.id = id;
         this.uuid = uuid;
         this.description = description;
@@ -32,7 +33,7 @@ public class Transaction {
         this.transactionType = transactionType;
         this.categoryId = categoryId;
         this.pocketId = pocketId;
-        this.loanId = loanId;
+        this.toPocketId = toPocketId;        this.loanId = loanId;
         this.goalId = goalId;
     }
 
@@ -106,6 +107,14 @@ public class Transaction {
 
     public void setPocketId(Long pocketId) {
         this.pocketId = pocketId;
+    }
+
+    public Long getToPocketId() {
+        return toPocketId;
+    }
+
+    public void setToPocketId(Long toPocketId) {
+        this.toPocketId = toPocketId;
     }
 
     public Long getLoanId() {

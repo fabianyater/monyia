@@ -8,6 +8,7 @@ import com.fyrdev.monyia.domain.model.dto.TransactionSummaryByCategoriesResponse
 import com.fyrdev.monyia.domain.model.enums.TransactionType;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface ITransactionServicePort {
@@ -15,7 +16,7 @@ public interface ITransactionServicePort {
     BigDecimal getMonthlyIncome(Long pocketId);
     BigDecimal getMonthlyExpense(Long pocketId);
     List<TransactionSummaryByCategoriesResponse> getTransactionSummaryByCategories(Long pocketId, TransactionType transactionType);
-    List<TransactionResponseSummary> listTransactionsByCategory(Long pocketId, String transactionType, String categoryName);
+    List<TransactionResponseSummary> listTransactionsByCategory(Long pocketId, TransactionType transactionType, String categoryName, LocalDate startDate, LocalDate endDate);
     List<LoanTransactionsResponse> findAllTransactionsByLoanId(Long loanId, String loanType);
     List<GoalTransactionsResponse> findAllTransactionsByGoalId(Long goalId);
 }
