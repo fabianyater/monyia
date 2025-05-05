@@ -91,7 +91,12 @@ public class BeanConfiguration {
 
     @Bean
     public IPocketServicePort pocketServicePort() {
-        return new PocketUseCase(pocketPersistencePort(), authenticationPort(), aiTextClassifierPort());
+        return new PocketUseCase(
+                pocketPersistencePort(),
+                authenticationPort(),
+                aiTextClassifierPort(),
+                transactionServicePort(),
+                categoryServicePort());
     }
 
     @Bean
