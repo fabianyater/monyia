@@ -51,7 +51,7 @@ public class LoanUseCase implements ILoanServicePort {
         Category existingCategory = categoryServicePort.getCategoryByName(categoryName);
 
         if (loanType.equals(LoanType.LENDER)) {
-            if (!pocketServicePort.isPocketBalanceSufficient(pocketId, loanAmount)) {
+            if (pocketServicePort.isPocketBalanceSufficient(pocketId, loanAmount)) {
                 throw new InsufficientBalanceException(DomainConstants.INSUFFICIENT_BALANCE_MESSAGE);
             }
         }
@@ -108,7 +108,7 @@ public class LoanUseCase implements ILoanServicePort {
         Long existingPocketId = pocket.getId();
 
         if (loan.getLoanType().equals(LoanType.BORROWER)) {
-            if (!pocketServicePort.isPocketBalanceSufficient(existingPocketId, amount)) {
+            if (pocketServicePort.isPocketBalanceSufficient(existingPocketId, amount)) {
                 throw new InsufficientBalanceException(DomainConstants.INSUFFICIENT_BALANCE_MESSAGE);
             }
         }
