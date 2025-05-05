@@ -1,6 +1,7 @@
 package com.fyrdev.monyia.adapters.driving.http.controller;
 
 import com.fyrdev.monyia.adapters.driving.http.dto.request.PocketRequest;
+import com.fyrdev.monyia.adapters.driving.http.dto.request.TransferRequest;
 import com.fyrdev.monyia.adapters.driving.http.dto.response.PocketResponse;
 import com.fyrdev.monyia.adapters.driving.http.dto.response.TotaBalanceResponse;
 import com.fyrdev.monyia.adapters.driving.http.mapper.IPocketRequestMapper;
@@ -80,6 +81,30 @@ public class PocketController {
                 HttpStatus.OK.value(),
                 null,
                 totalBalanceResponse,
+                request.getRequestURI(),
+                System.currentTimeMillis()
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PostMapping("/transfer")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<Void>> transferBetweenPockets(
+            @Valid
+            @RequestBody
+            TransferRequest transferRequest,
+            HttpServletRequest request) {
+        Long fromPocketId = transferRequest.fromPocketId();
+        Long toPocketId = transferRequest.toPocketId();
+        Double amount = transferRequest.amount();
+
+        pocketServicePort.transferBetweenPockets(fromPocketId, toPocketId, amount);
+
+        ApiResponse<Void> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                null,
+                null,
                 request.getRequestURI(),
                 System.currentTimeMillis()
         );

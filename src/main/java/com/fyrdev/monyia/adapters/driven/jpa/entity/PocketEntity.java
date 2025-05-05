@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "pocket")
+@Table(name = "pockets")
 public class PocketEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
