@@ -13,4 +13,6 @@ public interface IPocketServicePort {
     List<Pocket> getPockets();
     Double getTotalBalanceByUserId();
     boolean isPocketBalanceSufficient(Long pocketId, Double amount);
+    void transferBetweenPockets(Long fromPocketId, Long toPocketId, Double amount);
+
 }
