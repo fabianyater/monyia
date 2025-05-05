@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -105,8 +106,10 @@ public class TransactionController {
             HttpServletRequest request,
             @RequestParam Long pocketId,
             @RequestParam String categoryName,
-            @RequestParam TransactionType type) {
-        var result = transactionServicePort.listTransactionsByCategory(pocketId, type.name(), categoryName);
+            @RequestParam TransactionType type,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate) {
+        var result = transactionServicePort.listTransactionsByCategory(pocketId, type, categoryName, startDate, endDate);
         var transactions = transactionResponseMapper
                 .toTransactionResponseList(result);
 
