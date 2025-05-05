@@ -57,6 +57,11 @@ public class TransactionEntity {
     private PocketEntity pocketEntity;
 
     @ManyToOne
+    @JoinColumn(name = "destination_pocket_entity_id")
+    private PocketEntity destinationPocketEntity;
+
+
+    @ManyToOne
     @JoinColumn(name = "loan_entity_id")
     private LoanEntity loanEntity;
 

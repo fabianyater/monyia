@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -41,13 +42,13 @@ public interface ITransactionRepository extends JpaRepository<TransactionEntity,
             SELECT c.id, c.name, c.defaultEmoji, SUM(t.amount)
             FROM TransactionEntity t
             JOIN t.categoryEntity c
-            WHERE t.transactionType = :type
+            WHERE t.transactionType IN :types
             AND c.userEntity.id = :userId
             AND t.pocketEntity.id = :pocketId
             GROUP BY c.id, c.name, c.defaultEmoji
             """)
     List<Object[]> getTotalAmountByCategoryGrouped(
-            @Param("type") TransactionType type,
+            @Param("types") List<TransactionType> types,
             @Param("userId") Long userId,
             @Param("pocketId") Long pocketId
     );
@@ -63,7 +64,7 @@ public interface ITransactionRepository extends JpaRepository<TransactionEntity,
             FROM
                 transactions t
             INNER JOIN
-                pocket p ON t.pocket_entity_id = p.id
+                pockets p ON t.pocket_entity_id = p.id
             INNER JOIN
                 users u ON p.user_entity_id = u.id
             INNER JOIN
@@ -97,7 +98,7 @@ public interface ITransactionRepository extends JpaRepository<TransactionEntity,
             inner join categories c
             on
             	t.category_entity_id = c.id
-            inner join pocket p
+            inner join pockets p
             on
             	t.pocket_entity_id = p.id
             where
@@ -123,7 +124,7 @@ public interface ITransactionRepository extends JpaRepository<TransactionEntity,
             	t."date",
             	t.transaction_type
             from
-            	goal_entity ge
+            	goals ge
             inner join transactions t
             on
             	t.goal_entity_id = ge.id

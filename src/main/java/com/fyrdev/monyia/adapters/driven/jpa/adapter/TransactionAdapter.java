@@ -1,5 +1,6 @@
 package com.fyrdev.monyia.adapters.driven.jpa.adapter;
 
+import com.fyrdev.monyia.domain.model.Pocket;
 import com.fyrdev.monyia.domain.model.dto.GoalTransactionsResponse;
 import com.fyrdev.monyia.domain.model.dto.LoanTransactionsResponse;
 import com.fyrdev.monyia.domain.model.dto.TransactionResponseSummary;
@@ -14,8 +15,10 @@ import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 
 @RequiredArgsConstructor
 public class TransactionAdapter implements ITransactionPersistencePort {
@@ -31,11 +34,15 @@ public class TransactionAdapter implements ITransactionPersistencePort {
         }
 
         if (transaction.getGoalId() == null) {
-            transactionEntity.setLoanEntity(null);
+            transactionEntity.setGoalEntity(null);
         }
 
         if (transaction.getPocketId() == null) {
             transactionEntity.setPocketEntity(null);
+        }
+
+        if (transaction.getToPocketId() == null) {
+            transactionEntity.setDestinationPocketEntity(null);
         }
 
         transactionRepository.save(transactionEntity);
@@ -55,9 +62,10 @@ public class TransactionAdapter implements ITransactionPersistencePort {
 
     @Override
     public List<TransactionSummaryByCategoriesResponse> getTransactionSummaryByCategories(Long pocketId, Long userId, TransactionType transactionType) {
+        List<TransactionType> types = List.of(transactionType, TransactionType.TRANSFER);
 
         return transactionRepository
-                .getTotalAmountByCategoryGrouped(transactionType, userId, pocketId)
+                .getTotalAmountByCategoryGrouped(types, userId, pocketId)
                 .stream()
                 .map(obj -> new TransactionSummaryByCategoriesResponse(
                         (Long) obj[0],
@@ -69,15 +77,16 @@ public class TransactionAdapter implements ITransactionPersistencePort {
     }
 
     @Override
-    public List<TransactionResponseSummary> listTransactionsByCategory(Long pocketId, Long userId, Long categoryId, String transactionType, String categoryName) {
+    public List<TransactionResponseSummary> listTransactionsByCategory(Long pocketId, Long userId, Long categoryId, TransactionType transactionType, String categoryName) {
+
         var result = transactionRepository
-                .findTransactionsByFilters(pocketId, userId, categoryId, transactionType, categoryName)
+                .findTransactionsByFilters(pocketId, userId, categoryId, transactionType.name(), categoryName)
                 .stream()
                 .map(obj -> new TransactionResponseSummary(
                         (Long) obj[0],
                         (String) obj[1],
                         ((BigDecimal) obj[2]).doubleValue(),
-                        obj[3].toString(),
+                        ((Timestamp) obj[3]).toLocalDateTime().toLocalDate(),
                         (String) obj[4],
                         (String) obj[5]
                 ))
