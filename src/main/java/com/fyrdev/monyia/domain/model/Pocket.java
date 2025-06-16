@@ -8,21 +8,23 @@ public class Pocket {
     private Long id;
     private UUID uuid;
     private String name;
-    private Double balance;
+    private BigDecimal balance;
     private LocalDateTime date;
     private String emoji;
+    private Boolean excludeBalance;
     private Long userId;
 
     public Pocket() {
     }
 
-    public Pocket(Long id, UUID uuid, String name, Double balance, LocalDateTime date, String emoji, Long userId) {
+    public Pocket(Long id, UUID uuid, String name, BigDecimal balance, LocalDateTime date, String emoji, Boolean excludeBalance, Long userId) {
         this.id = id;
         this.uuid = uuid;
         this.name = name;
         this.balance = balance;
         this.date = date;
         this.emoji = emoji;
+        this.excludeBalance = excludeBalance;
         this.userId = userId;
     }
 
@@ -50,11 +52,11 @@ public class Pocket {
         this.name = name;
     }
 
-    public Double getBalance() {
+    public BigDecimal getBalance() {
         return balance;
     }
 
-    public void setBalance(Double balance) {
+    public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
 
@@ -72,6 +74,14 @@ public class Pocket {
 
     public void setEmoji(String emoji) {
         this.emoji = emoji;
+    }
+
+    public Boolean getExcludeBalance() {
+        return excludeBalance;
+    }
+
+    public void setExcludeBalance(Boolean excludeBalance) {
+        this.excludeBalance = excludeBalance;
     }
 
     public Long getUserId() {

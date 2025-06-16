@@ -16,6 +16,7 @@ import com.fyrdev.monyia.domain.spi.IAuthenticationPort;
 import com.fyrdev.monyia.domain.spi.IGoalPersistencePort;
 import com.fyrdev.monyia.domain.util.DomainConstants;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -70,17 +71,17 @@ public class GoalUseCase implements IGoalServicePort {
     }
 
     @Override
-    public void makeDepositOrWithdraw(Long goalId, Double amount, GoalTransactionType type) {
+    public void makeDepositOrWithdraw(Long goalId, BigDecimal amount, GoalTransactionType type) {
         Long userId = authenticationPort.getAuthenticatedUserId();
         Goal goal = getGoalById(goalId);
         String categoryName = setCategoryName(type);
         Category category = categoryServicePort.getCategoryByName(categoryName);
 
-        if (amount <= 0) {
+        if (amount.doubleValue() <= 0) {
             throw new InsufficientBalanceException(DomainConstants.INVALID_DEPOSIT_AMOUNT);
         }
 
-        if (goal.getBalance() < amount) {
+        if (goal.getBalance().doubleValue() < amount.doubleValue()) {
             throw new InsufficientBalanceException(DomainConstants.INSUFFICIENT_BALANCE_MESSAGE);
         }
 
@@ -103,10 +104,10 @@ public class GoalUseCase implements IGoalServicePort {
 
     }
 
-    Double updateBalance(GoalTransactionType type, Double amount, Double currentBalance) {
+    BigDecimal updateBalance(GoalTransactionType type, BigDecimal amount, BigDecimal currentBalance) {
         return type.equals(GoalTransactionType.DEPOSIT) ?
-                currentBalance - amount :
-                currentBalance + amount;
+                currentBalance.subtract(amount) :
+                currentBalance.add(amount);
     }
 
     TransactionType setTransactionType(GoalTransactionType type) {

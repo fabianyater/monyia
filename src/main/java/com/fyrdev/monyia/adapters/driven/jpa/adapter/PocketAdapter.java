@@ -7,6 +7,7 @@ import com.fyrdev.monyia.domain.model.enums.TransactionType;
 import com.fyrdev.monyia.domain.spi.IPocketPersistencePort;
 import lombok.RequiredArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -41,8 +42,8 @@ public class PocketAdapter implements IPocketPersistencePort {
     }
 
     @Override
-    public int updateBalanceById(Double balance, Long pocketId) {
-        return pocketRepository.updateBalanceById(balance, pocketId);
+    public int updateBalanceById(BigDecimal balance, Long pocketId) {
+        return pocketRepository.updateBalanceById(balance.doubleValue(), pocketId);
     }
 
     @Override

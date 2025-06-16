@@ -11,6 +11,7 @@ import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -23,7 +24,7 @@ public class TransactionRequest {
 
     @NotNull(message = "Transaction amount cannot be empty")
     @NumberFormat(style = NumberFormat.Style.CURRENCY)
-    private Long amount;
+    private BigDecimal amount;
 
     @NotNull(message = "Transaction date cannot be empty")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

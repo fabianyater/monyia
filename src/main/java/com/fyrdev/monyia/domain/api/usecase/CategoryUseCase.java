@@ -2,6 +2,7 @@ package com.fyrdev.monyia.domain.api.usecase;
 
 import com.fyrdev.monyia.configuration.exceptionhandler.ResourceNotFoundException;
 import com.fyrdev.monyia.domain.api.ICategoryServicePort;
+import com.fyrdev.monyia.domain.exception.RequiredParamException;
 import com.fyrdev.monyia.domain.model.Category;
 import com.fyrdev.monyia.domain.spi.AITextClassifierPort;
 import com.fyrdev.monyia.domain.spi.IAuthenticationPort;
@@ -42,6 +43,10 @@ public class CategoryUseCase implements ICategoryServicePort {
 
     @Override
     public Long getCategoryIdByName(String category) {
+        if (category == null || category.isBlank()) {
+            throw new RequiredParamException(DomainConstants.REQUIRED_PARAM_MESSAGE);
+        }
+
         Long userId = authenticationPort.getAuthenticatedUserId();
         Category foundCategory = categoryPersistencePort.getCategoryByName(category, userId);
 

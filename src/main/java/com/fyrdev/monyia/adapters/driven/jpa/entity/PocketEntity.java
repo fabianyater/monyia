@@ -38,6 +38,8 @@ public class PocketEntity {
     @Column(nullable = false)
     private String emoji;
 
+    private Boolean excludeBalance;
+
     @ManyToOne
     @JoinColumn(name = "user_entity_id")
     private UserEntity userEntity;

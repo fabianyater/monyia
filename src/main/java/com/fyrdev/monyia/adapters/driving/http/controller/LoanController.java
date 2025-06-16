@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -86,8 +87,8 @@ public class LoanController {
                 loan.getId(),
                 loan.getLoanParty(),
                 loan.getDescription(),
-                loan.getAmount(),
-                loan.getBalance(),
+                loan.getAmount().doubleValue(),
+                loan.getBalance().doubleValue(),
                 loan.getStartDate(),
                 loan.getLoanType().name(),
                 pocket.getName()
@@ -132,7 +133,7 @@ public class LoanController {
             HttpServletRequest request) {
         Long loanId = loanPaymentRequest.loanId();
         Long pocketId = loanPaymentRequest.pocketId();
-        Double amount = loanPaymentRequest.amount();
+        BigDecimal amount = loanPaymentRequest.amount();
 
         loanServicePort.makePayment(loanId, pocketId, amount);
 

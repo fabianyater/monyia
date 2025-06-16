@@ -18,6 +18,7 @@ import com.fyrdev.monyia.domain.spi.IAuthenticationPort;
 import com.fyrdev.monyia.domain.spi.ILoanPersistencePort;
 import com.fyrdev.monyia.domain.util.DomainConstants;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -43,7 +44,7 @@ public class LoanUseCase implements ILoanServicePort {
 
     @Override
     public void saveLoan(Loan loan) {
-        Double loanAmount = loan.getAmount();
+        BigDecimal loanAmount = loan.getAmount();
         Pocket pocket = pocketServicePort.getPocketByIdAndUserId(loan.getPocketId());
         Long pocketId = pocket.getId();
         LoanType loanType = loan.getLoanType();
@@ -88,7 +89,7 @@ public class LoanUseCase implements ILoanServicePort {
     }
 
     @Override
-    public void makePayment(Long loanId, Long pocketId, Double amount) {
+    public void makePayment(Long loanId, Long pocketId, BigDecimal amount) {
         Long userId = authenticationPort.getAuthenticatedUserId();
         Loan loan = loanPersistencePort.findLoanDetails(loanId, userId);
 
@@ -97,7 +98,7 @@ public class LoanUseCase implements ILoanServicePort {
         }
 
         if (loan.getLoanType().equals(LoanType.BORROWER)) {
-            if (loan.getBalance() < amount) {
+            if (loan.getBalance().doubleValue() < amount.doubleValue()) {
                 throw new InsufficientBalanceException(DomainConstants.INSUFFICIENT_BALANCE_MESSAGE);
             }
         }
@@ -113,9 +114,9 @@ public class LoanUseCase implements ILoanServicePort {
             }
         }
 
-        loan.setBalance(loan.getBalance() - amount);
+        loan.setBalance(loan.getBalance().subtract(amount));
 
-        if (loan.getBalance() <= 0) {
+        if (loan.getBalance().doubleValue() <= 0) {
             loan.setLoanStatus(LoanStatus.COMPLETED);
         }
 

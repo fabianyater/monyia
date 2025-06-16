@@ -3,6 +3,8 @@ package com.fyrdev.monyia.configuration.exceptionhandler;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fyrdev.monyia.domain.exception.AlreadyExistsException;
 import com.fyrdev.monyia.domain.exception.InsufficientBalanceException;
+import com.fyrdev.monyia.domain.exception.InvalidCredentialsException;
+import com.fyrdev.monyia.domain.exception.RequiredParamException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,9 +15,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.nio.channels.ClosedChannelException;
-import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @ControllerAdvice
@@ -58,6 +58,18 @@ public class ControllerAdvisor {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
+    @ExceptionHandler(RequiredParamException.class)
+    public ResponseEntity<ApiResponse<Void>> handleRequiredParamException(RequiredParamException ex, HttpServletRequest request) {
+        ApiResponse<Void> response = new ApiResponse<>(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage(),
+                null,
+                request.getRequestURI(),
+                System.currentTimeMillis()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Map<String, String>>> handleValidationErrors(MethodArgumentNotValidException ex, HttpServletRequest request) {
         Map<String, String> errors = new HashMap<>();
@@ -90,6 +102,18 @@ public class ControllerAdvisor {
         );
 
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidCredentialsException(InvalidCredentialsException ex, HttpServletRequest request) {
+        ApiResponse<Void> response = new ApiResponse<>(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage(),
+                null,
+                request.getRequestURI(),
+                System.currentTimeMillis()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     @ExceptionHandler(JsonParseException.class)

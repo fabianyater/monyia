@@ -74,4 +74,9 @@ public class OllamaAdapter implements AITextClassifierPort {
         }
     }
 
+    @Override
+    public String suggestCategory() {
+        return "";
+    }
+
 }

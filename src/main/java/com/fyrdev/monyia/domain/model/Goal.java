@@ -1,12 +1,13 @@
 package com.fyrdev.monyia.domain.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class Goal {
     private Long id;
     private String name;
-    private Double amount;
-    private Double balance;
+    private BigDecimal amount;
+    private BigDecimal balance;
     private String emoji;
     private LocalDateTime dueDate;
     private Long userId;
@@ -14,7 +15,7 @@ public class Goal {
     public Goal() {
     }
 
-    public Goal(Long id, String name, Double amount, Double balance, String emoji, LocalDateTime dueDate, Long userId) {
+    public Goal(Long id, String name, BigDecimal amount, BigDecimal balance, String emoji, LocalDateTime dueDate, Long userId) {
         this.id = id;
         this.name = name;
         this.amount = amount;
@@ -48,19 +49,19 @@ public class Goal {
         this.name = name;
     }
 
-    public Double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(Double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
-    public Double getBalance() {
+    public BigDecimal getBalance() {
         return balance;
     }
 
-    public void setBalance(Double balance) {
+    public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
 

@@ -3,6 +3,7 @@ package com.fyrdev.monyia.domain.spi;
 import com.fyrdev.monyia.domain.model.Pocket;
 import com.fyrdev.monyia.domain.model.enums.TransactionType;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface IPocketPersistencePort {
@@ -10,6 +11,6 @@ public interface IPocketPersistencePort {
     List<Pocket> getPocketsByUserId(Long userId);
     Pocket getPocketByIdAndUserId(Long pocketId, Long userId);
     Double getBalance(Long pocketId, Long userId);
-    int updateBalanceById(Double balance, Long pocketId);
+    int updateBalanceById(BigDecimal balance, Long pocketId);
     Double getTotalBalanceByUserId(Long userId);
 }

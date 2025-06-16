@@ -20,6 +20,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -57,8 +58,10 @@ public class TransactionController {
 
     @GetMapping("/monthly-income")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<ApiResponse<BigDecimal>> getMonthlyIncome(@RequestParam Long pocketId) {
-        BigDecimal income = transactionServicePort.getMonthlyIncome(pocketId);
+    public ResponseEntity<ApiResponse<BigDecimal>> getMonthlyIncome(
+            @RequestParam Long pocketId,
+            @RequestParam LocalDateTime startDate) {
+        BigDecimal income = transactionServicePort.getMonthlyIncome(pocketId, startDate);
         ApiResponse<BigDecimal> response = new ApiResponse<>(
                 200,
                 "Ingresos del mes actual obtenidos correctamente",
@@ -71,8 +74,10 @@ public class TransactionController {
 
     @GetMapping("/monthly-expense")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<ApiResponse<BigDecimal>> getMonthlyExpense(@RequestParam Long pocketId) {
-        BigDecimal expense = transactionServicePort.getMonthlyExpense(pocketId);
+    public ResponseEntity<ApiResponse<BigDecimal>> getMonthlyExpense(
+            @RequestParam Long pocketId,
+            @RequestParam LocalDateTime startDate) {
+        BigDecimal expense = transactionServicePort.getMonthlyExpense(pocketId, startDate);
         ApiResponse<BigDecimal> response = new ApiResponse<>(
                 200,
                 "Gastos del mes actual obtenidos correctamente",
@@ -88,8 +93,9 @@ public class TransactionController {
     public ResponseEntity<ApiResponse<List<TransactionSummaryByCategoriesResponse>>> getTransactionSummaryByCategories(
             @RequestParam Long pocketId,
             @RequestParam TransactionType transactionType,
+            @RequestParam LocalDateTime startDate,
             HttpServletRequest request) {
-        var transactionSummary = transactionServicePort.getTransactionSummaryByCategories(pocketId, transactionType);
+        var transactionSummary = transactionServicePort.getTransactionSummaryByCategories(pocketId, transactionType, startDate);
         ApiResponse<List<TransactionSummaryByCategoriesResponse>> response = new ApiResponse<>(
                 200,
                 "Resumen de transacciones por categorías obtenido correctamente",
@@ -112,6 +118,26 @@ public class TransactionController {
         var result = transactionServicePort.listTransactionsByCategory(pocketId, type, categoryName, startDate, endDate);
         var transactions = transactionResponseMapper
                 .toTransactionResponseList(result);
+
+        ApiResponse<List<TransactionResponse>> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                null,
+                transactions,
+                request.getRequestURI(),
+                System.currentTimeMillis()
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/latest")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<List<TransactionResponse>>> getLatestTransactions(
+            HttpServletRequest request,
+            @RequestParam Long pocketId) {
+        var result = transactionServicePort.getLatestTransactionsByPocketId(pocketId);
+        var transactions = transactionResponseMapper
+                .toTransactionResponseModelList(result);
 
         ApiResponse<List<TransactionResponse>> response = new ApiResponse<>(
                 HttpStatus.OK.value(),

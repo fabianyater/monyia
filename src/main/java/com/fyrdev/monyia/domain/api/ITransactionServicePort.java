@@ -9,14 +9,17 @@ import com.fyrdev.monyia.domain.model.enums.TransactionType;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ITransactionServicePort {
     Transaction saveNewTransaction(Transaction transaction);
-    BigDecimal getMonthlyIncome(Long pocketId);
-    BigDecimal getMonthlyExpense(Long pocketId);
-    List<TransactionSummaryByCategoriesResponse> getTransactionSummaryByCategories(Long pocketId, TransactionType transactionType);
+    BigDecimal getMonthlyIncome(Long pocketId, LocalDateTime startDate);
+    BigDecimal getMonthlyExpense(Long pocketId, LocalDateTime startDate);
+    List<TransactionSummaryByCategoriesResponse> getTransactionSummaryByCategories(Long pocketId, TransactionType transactionType, LocalDateTime startDate);
     List<TransactionResponseSummary> listTransactionsByCategory(Long pocketId, TransactionType transactionType, String categoryName, LocalDate startDate, LocalDate endDate);
     List<LoanTransactionsResponse> findAllTransactionsByLoanId(Long loanId, String loanType);
     List<GoalTransactionsResponse> findAllTransactionsByGoalId(Long goalId);
+    Double sumByUserAndDateRangeAndType(Long pocketId, LocalDateTime startDate, LocalDateTime endDate, TransactionType type);
+    List<Transaction> getLatestTransactionsByPocketId(Long pocketId);
 }

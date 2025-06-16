@@ -16,6 +16,7 @@ import com.fyrdev.monyia.domain.util.DomainConstants;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -61,21 +62,21 @@ public class TransactionUseCase implements ITransactionServicePort {
     }
 
     @Override
-    public BigDecimal getMonthlyIncome(Long pocketId) {
+    public BigDecimal getMonthlyIncome(Long pocketId, LocalDateTime startDate) {
         Long userId = authenticationPort.getAuthenticatedUserId();
-        return transactionPersistencePort.getMonthlyIncome(pocketId, userId);
+        return transactionPersistencePort.getMonthlyIncome(pocketId, userId, startDate);
     }
 
     @Override
-    public BigDecimal getMonthlyExpense(Long pocketId) {
+    public BigDecimal getMonthlyExpense(Long pocketId, LocalDateTime startDate) {
         Long userId = authenticationPort.getAuthenticatedUserId();
-        return transactionPersistencePort.getMonthlyExpense(pocketId, userId);
+        return transactionPersistencePort.getMonthlyExpense(pocketId, userId, startDate);
     }
 
     @Override
-    public List<TransactionSummaryByCategoriesResponse> getTransactionSummaryByCategories(Long pocketId, TransactionType transactionType) {
+    public List<TransactionSummaryByCategoriesResponse> getTransactionSummaryByCategories(Long pocketId, TransactionType transactionType, LocalDateTime startDate) {
         Long userId = authenticationPort.getAuthenticatedUserId();
-        return transactionPersistencePort.getTransactionSummaryByCategories(pocketId, userId, transactionType)
+        return transactionPersistencePort.getTransactionSummaryByCategories(pocketId, userId, transactionType, startDate)
                 .stream()
                 .sorted(Comparator
                         .comparing(TransactionSummaryByCategoriesResponse::totalAmount)
@@ -124,11 +125,29 @@ public class TransactionUseCase implements ITransactionServicePort {
                 .toList();
     }
 
-    private void updatePocketBalance(Pocket pocket, Double amount, TransactionType transactionType) {
+    @Override
+    public Double sumByUserAndDateRangeAndType(Long pocketId, LocalDateTime startDate, LocalDateTime endDate, TransactionType type) {
+        Long userId = authenticationPort.getAuthenticatedUserId();
+        Double result = transactionPersistencePort.sumByUserAndDateRangeAndType(userId, pocketId, type, startDate, endDate);
+
+        return result != null ? result : 0.0;
+    }
+
+    @Override
+    public List<Transaction> getLatestTransactionsByPocketId(Long pocketId) {
+        Long userId = authenticationPort.getAuthenticatedUserId();
+        return transactionPersistencePort.getLatestTransactionsByPocketIdAndUserId(pocketId, userId)
+                .stream()
+                .sorted(Comparator.comparing(Transaction::getDate).reversed())
+                .limit(5)
+                .toList();
+    }
+
+    private void updatePocketBalance(Pocket pocket, BigDecimal amount, TransactionType transactionType) {
         if (transactionType == TransactionType.EXPENSE) {
-            pocketPersistencePort.updateBalanceById(pocket.getBalance() - amount, pocket.getId());
+            pocketPersistencePort.updateBalanceById(pocket.getBalance().subtract(amount), pocket.getId());
         } else {
-            pocketPersistencePort.updateBalanceById(pocket.getBalance() + amount, pocket.getId());
+            pocketPersistencePort.updateBalanceById(pocket.getBalance().add(amount), pocket.getId());
         }
     }
 }

@@ -25,4 +25,5 @@ public interface ITransactionEntityMapper {
     @Mapping(target = "toPocketId", source = "destinationPocketEntity.id")
     Transaction toTransaction(TransactionEntity transactionEntity);
     List<Transaction> toTransactionList(List<TransactionEntity> transactionEntities);
+    List<Transaction> toTransactionLs(List<TransactionEntity> transactionEntities);
 }

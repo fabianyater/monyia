@@ -45,12 +45,15 @@ public interface ITransactionRepository extends JpaRepository<TransactionEntity,
             WHERE t.transactionType IN :types
             AND c.userEntity.id = :userId
             AND t.pocketEntity.id = :pocketId
+            AND t.date BETWEEN :startDate AND :endDate
             GROUP BY c.id, c.name, c.defaultEmoji
             """)
     List<Object[]> getTotalAmountByCategoryGrouped(
             @Param("types") List<TransactionType> types,
             @Param("userId") Long userId,
-            @Param("pocketId") Long pocketId
+            @Param("pocketId") Long pocketId,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
     );
 
     @Query(value = """
@@ -136,4 +139,26 @@ public interface ITransactionRepository extends JpaRepository<TransactionEntity,
             	and ge.user_entity_id = :userId
             """, nativeQuery = true)
     List<Object[]> findGoalTransactionByGoalId(@Param("goalId") Long goalId, @Param("userId") Long userId);
+
+    @Query(value = """
+        select
+            sum(t.amount)
+        from
+            transactions t
+        inner join pockets p on t.pocket_entity_id = p.id
+        where
+            p.user_entity_id = :userId
+            and p.id = :pocketId
+            and t.transaction_type = :type
+            and t.date between :startDate and :endDate
+        """, nativeQuery = true)
+    Double sumByUserAndPocketAndDateRangeAndType(
+            @Param("userId") Long userId,
+            @Param("pocketId") Long pocketId,
+            @Param("type") String type,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate);
+
+    List<TransactionEntity> findByPocketEntity_IdAndPocketEntity_UserEntity_Id(Long id, Long id1);
+
 }

@@ -3,12 +3,13 @@ package com.fyrdev.monyia.domain.model;
 import com.fyrdev.monyia.domain.model.enums.LoanStatus;
 import com.fyrdev.monyia.domain.model.enums.LoanType;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class Loan {
     private Long id;
-    private Double amount;
-    private Double balance;
+    private BigDecimal amount;
+    private BigDecimal balance;
     private String loanParty;
     private String description;
     private LoanType loanType;
@@ -21,8 +22,8 @@ public class Loan {
 
     public Loan(
             Long id,
-            Double amount,
-            Double balance,
+            BigDecimal amount,
+            BigDecimal balance,
             String loanParty,
             String description,
             LoanType loanType,
@@ -48,19 +49,19 @@ public class Loan {
         this.id = id;
     }
 
-    public Double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(Double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
-    public Double getBalance() {
+    public BigDecimal getBalance() {
         return balance;
     }
 
-    public void setBalance(Double balance) {
+    public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
 

@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -92,7 +93,7 @@ public class GoalController {
             @RequestBody GoalTransactionRequest goalTransactionRequest,
             HttpServletRequest request) {
         Long goalId = goalTransactionRequest.goalId();
-        Double amount = goalTransactionRequest.amount();
+        BigDecimal amount = goalTransactionRequest.amount();
         var type = goalTransactionRequest.type();
 
         goalServicePort.makeDepositOrWithdraw(goalId, amount, type);
@@ -114,7 +115,7 @@ public class GoalController {
             @RequestBody GoalTransactionRequest goalTransactionRequest,
             HttpServletRequest request) {
         Long goalId = goalTransactionRequest.goalId();
-        Double amount = goalTransactionRequest.amount();
+        BigDecimal amount = goalTransactionRequest.amount();
         var type = goalTransactionRequest.type();
 
         goalServicePort.makeDepositOrWithdraw(goalId, amount, type);

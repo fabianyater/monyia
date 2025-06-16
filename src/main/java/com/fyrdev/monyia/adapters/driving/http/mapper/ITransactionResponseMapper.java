@@ -15,6 +15,7 @@ import java.util.List;
 public interface ITransactionResponseMapper {
 
     @Mapping(target = "value", source = "amount")
+    @Mapping(target = "type", source = "transactionType")
     TransactionResponse toTransactionResponse(Transaction transaction);
 
     @Mapping(target = "value", source = "amount")

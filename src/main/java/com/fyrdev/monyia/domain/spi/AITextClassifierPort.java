@@ -7,4 +7,5 @@ import java.util.List;
 public interface AITextClassifierPort {
     ClassificationResult classifyTransaction(String text);
     List<String> suggestEmojis(String categoryName);
+    String suggestCategory();
 }

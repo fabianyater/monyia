@@ -3,6 +3,7 @@ package com.fyrdev.monyia.domain.model;
 import com.fyrdev.monyia.domain.model.enums.Periodicity;
 import com.fyrdev.monyia.domain.model.enums.TransactionType;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -10,7 +11,7 @@ public class Transaction {
     private Long id;
     private UUID uuid;
     private String description;
-    private Double amount;
+    private BigDecimal amount;
     private LocalDateTime date;
     private Periodicity periodicity;
     private TransactionType transactionType;
@@ -23,7 +24,7 @@ public class Transaction {
     public Transaction() {
     }
 
-    public Transaction(Long id, UUID uuid, String description, Double amount, LocalDateTime date, Periodicity periodicity, TransactionType transactionType, Long categoryId, Long pocketId, Long toPocketId, Long loanId, Long goalId) {
+    public Transaction(Long id, UUID uuid, String description, BigDecimal amount, LocalDateTime date, Periodicity periodicity, TransactionType transactionType, Long categoryId, Long pocketId, Long toPocketId, Long loanId, Long goalId) {
         this.id = id;
         this.uuid = uuid;
         this.description = description;
@@ -61,11 +62,11 @@ public class Transaction {
         this.description = description;
     }
 
-    public Double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(Double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 

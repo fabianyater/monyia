@@ -51,21 +51,21 @@ public class TransactionAdapter implements ITransactionPersistencePort {
     }
 
     @Override
-    public BigDecimal getMonthlyIncome(Long pocketId, Long userId) {
-        return transactionRepository.getMonthlyIncome(pocketId, userId, getStartOfMonth(), getStartOfNextMonth());
+    public BigDecimal getMonthlyIncome(Long pocketId, Long userId, LocalDateTime startDate) {
+        return transactionRepository.getMonthlyIncome(pocketId, userId, getStartOfMonth(startDate), getStartOfNextMonth(startDate));
     }
 
     @Override
-    public BigDecimal getMonthlyExpense(Long pocketId, Long userId) {
-        return transactionRepository.getMonthlyExpense(pocketId, userId, getStartOfMonth(), getStartOfNextMonth());
+    public BigDecimal getMonthlyExpense(Long pocketId, Long userId, LocalDateTime startDate) {
+        return transactionRepository.getMonthlyExpense(pocketId, userId, getStartOfMonth(startDate), getStartOfNextMonth(startDate));
     }
 
     @Override
-    public List<TransactionSummaryByCategoriesResponse> getTransactionSummaryByCategories(Long pocketId, Long userId, TransactionType transactionType) {
+    public List<TransactionSummaryByCategoriesResponse> getTransactionSummaryByCategories(Long pocketId, Long userId, TransactionType transactionType, LocalDateTime startDate) {
         List<TransactionType> types = List.of(transactionType, TransactionType.TRANSFER);
 
         return transactionRepository
-                .getTotalAmountByCategoryGrouped(types, userId, pocketId)
+                .getTotalAmountByCategoryGrouped(types, userId, pocketId, getStartOfMonth(startDate), getStartOfNextMonth(startDate))
                 .stream()
                 .map(obj -> new TransactionSummaryByCategoriesResponse(
                         (Long) obj[0],
@@ -128,12 +128,23 @@ public class TransactionAdapter implements ITransactionPersistencePort {
                 .toList();
     }
 
-    private LocalDateTime getStartOfMonth() {
-        return LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
+    @Override
+    public Double sumByUserAndDateRangeAndType(Long userId, Long pocketId, TransactionType type, LocalDateTime startDate, LocalDateTime endDate) {
+        return transactionRepository.sumByUserAndPocketAndDateRangeAndType(userId, pocketId, type.name(), startDate, endDate);
     }
 
-    private LocalDateTime getStartOfNextMonth() {
-        return getStartOfMonth().plusMonths(1);
+    @Override
+    public List<Transaction> getLatestTransactionsByPocketIdAndUserId(Long pocketId, Long userId) {
+        var transactions = transactionRepository.findByPocketEntity_IdAndPocketEntity_UserEntity_Id(pocketId, userId);
+        return transactionEntityMapper.toTransactionLs(transactions);
+    }
+
+    private LocalDateTime getStartOfMonth(LocalDateTime startDate) {
+        return startDate.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
+    }
+
+    private LocalDateTime getStartOfNextMonth(LocalDateTime startDate) {
+        return getStartOfMonth(startDate).plusMonths(1);
     }
 
 }

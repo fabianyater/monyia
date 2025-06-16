@@ -21,4 +21,5 @@ public class DomainConstants {
     public static final String CATEGORY_NOT_FOUND_MESSAGE = "Category not found";
     public static final String USER_NOT_FOUND_MESSAGE = "Usuario no encontrado";
     public static final String POCKET_NOT_FOUND_MESSAGE = "Pocket not found";
+    public static final String REQUIRED_PARAM_MESSAGE = "Parametro requerido no encontrado";
 }
