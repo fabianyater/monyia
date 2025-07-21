@@ -86,7 +86,7 @@ public class TransactionUseCase implements ITransactionServicePort {
     }
 
     @Override
-    public List<TransactionResponseSummary> listTransactionsByCategory(Long pocketId, TransactionType transactionType, String categoryName, LocalDate startDate, LocalDate endDate) {
+    public List<TransactionResponseSummary> listTransactionsByCategory(Long pocketId, TransactionType transactionType, String categoryName, LocalDateTime startDate, LocalDateTime endDate) {
         Long userId = authenticationPort.getAuthenticatedUserId();
         Category category = categoryPersistencePort.getCategoryByName(categoryName, userId);
 
@@ -136,10 +136,20 @@ public class TransactionUseCase implements ITransactionServicePort {
     @Override
     public List<Transaction> getLatestTransactionsByPocketId(Long pocketId) {
         Long userId = authenticationPort.getAuthenticatedUserId();
-        return transactionPersistencePort.getLatestTransactionsByPocketIdAndUserId(pocketId, userId)
+        return transactionPersistencePort.getLatestTransactions(pocketId, userId)
                 .stream()
                 .sorted(Comparator.comparing(Transaction::getDate).reversed())
                 .limit(5)
+                .toList();
+    }
+
+    @Override
+    public List<TransactionResponseSummary> getTransactionsByPocketId(Long pocketId, LocalDate startMonth) {
+        Long userId = authenticationPort.getAuthenticatedUserId();
+        return transactionPersistencePort
+                .getTransactions(pocketId, userId, startMonth)
+                .stream()
+                .sorted(Comparator.comparing(TransactionResponseSummary::date).reversed())
                 .toList();
     }
 

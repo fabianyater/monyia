@@ -141,17 +141,17 @@ public interface ITransactionRepository extends JpaRepository<TransactionEntity,
     List<Object[]> findGoalTransactionByGoalId(@Param("goalId") Long goalId, @Param("userId") Long userId);
 
     @Query(value = """
-        select
-            sum(t.amount)
-        from
-            transactions t
-        inner join pockets p on t.pocket_entity_id = p.id
-        where
-            p.user_entity_id = :userId
-            and p.id = :pocketId
-            and t.transaction_type = :type
-            and t.date between :startDate and :endDate
-        """, nativeQuery = true)
+            select
+                sum(t.amount)
+            from
+                transactions t
+            inner join pockets p on t.pocket_entity_id = p.id
+            where
+                p.user_entity_id = :userId
+                and p.id = :pocketId
+                and t.transaction_type = :type
+                and t.date between :startDate and :endDate
+            """, nativeQuery = true)
     Double sumByUserAndPocketAndDateRangeAndType(
             @Param("userId") Long userId,
             @Param("pocketId") Long pocketId,
@@ -159,6 +159,20 @@ public interface ITransactionRepository extends JpaRepository<TransactionEntity,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate);
 
-    List<TransactionEntity> findByPocketEntity_IdAndPocketEntity_UserEntity_Id(Long id, Long id1);
+    @Query("select t from TransactionEntity t where t.pocketEntity.id = ?1 and t.pocketEntity.userEntity.id = ?2")
+    List<TransactionEntity> findLatestTransactions(Long id, Long id1);
+
+    @Query("""
+                SELECT t FROM TransactionEntity t
+                WHERE t.pocketEntity.id = :pocketId
+                  AND t.pocketEntity.userEntity.id = :userId
+                  AND t.date BETWEEN :startDate AND :endDate
+            """)
+    List<TransactionEntity> findByPocketAndUserAndMonth(
+            @Param("pocketId") Long pocketId,
+            @Param("userId") Long userId,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
+    );
 
 }

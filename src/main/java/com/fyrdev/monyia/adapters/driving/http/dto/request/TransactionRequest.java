@@ -28,7 +28,7 @@ public class TransactionRequest {
 
     @NotNull(message = "Transaction date cannot be empty")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private LocalDate date;
+    private LocalDateTime date;
 
     @NotNull(message = "Transaction periodicity cannot be empty")
     private Periodicity periodicity;

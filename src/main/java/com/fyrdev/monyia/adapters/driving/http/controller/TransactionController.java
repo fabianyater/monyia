@@ -113,8 +113,8 @@ public class TransactionController {
             @RequestParam Long pocketId,
             @RequestParam String categoryName,
             @RequestParam TransactionType type,
-            @RequestParam(required = false) LocalDate startDate,
-            @RequestParam(required = false) LocalDate endDate) {
+            @RequestParam(required = false) LocalDateTime startDate,
+            @RequestParam(required = false) LocalDateTime endDate) {
         var result = transactionServicePort.listTransactionsByCategory(pocketId, type, categoryName, startDate, endDate);
         var transactions = transactionResponseMapper
                 .toTransactionResponseList(result);
@@ -138,6 +138,28 @@ public class TransactionController {
         var result = transactionServicePort.getLatestTransactionsByPocketId(pocketId);
         var transactions = transactionResponseMapper
                 .toTransactionResponseModelList(result);
+
+        ApiResponse<List<TransactionResponse>> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                null,
+                transactions,
+                request.getRequestURI(),
+                System.currentTimeMillis()
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/all")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<List<TransactionResponse>>> getTransactions(
+            HttpServletRequest request,
+            @RequestParam Long pocketId,
+            @RequestParam(required = false)
+            LocalDate startMonth) {
+        var result = transactionServicePort.getTransactionsByPocketId(pocketId, startMonth);
+        var transactions = transactionResponseMapper
+                .toTransactionResponseList(result);
 
         ApiResponse<List<TransactionResponse>> response = new ApiResponse<>(
                 HttpStatus.OK.value(),

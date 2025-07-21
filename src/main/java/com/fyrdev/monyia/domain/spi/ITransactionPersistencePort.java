@@ -21,5 +21,6 @@ public interface ITransactionPersistencePort {
     List<LoanTransactionsResponse> findAllTransactionsByLoanId(Long loanId, String loanType);
     List<GoalTransactionsResponse> findAllTransactionsByGoalId(Long goalId, Long userId);
     Double sumByUserAndDateRangeAndType(Long userId, Long pocketId, TransactionType type, LocalDateTime startDate, LocalDateTime endDate);
-    List<Transaction> getLatestTransactionsByPocketIdAndUserId(Long pocketId, Long userId);
+    List<Transaction> getLatestTransactions(Long pocketId, Long userId);
+    List<TransactionResponseSummary> getTransactions(Long pocketId, Long userId, LocalDate startMonth);
 }
