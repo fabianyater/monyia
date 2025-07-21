@@ -22,4 +22,5 @@ public interface ITransactionServicePort {
     List<GoalTransactionsResponse> findAllTransactionsByGoalId(Long goalId);
     Double sumByUserAndDateRangeAndType(Long pocketId, LocalDateTime startDate, LocalDateTime endDate, TransactionType type);
     List<Transaction> getLatestTransactionsByPocketId(Long pocketId);
+    List<TransactionResponseSummary> getTransactionsByPocketId(Long pocketId, LocalDate startMonth);
 }
