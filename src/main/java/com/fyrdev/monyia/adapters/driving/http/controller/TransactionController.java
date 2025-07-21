@@ -150,6 +150,28 @@ public class TransactionController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/all")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<List<TransactionResponse>>> getTransactions(
+            HttpServletRequest request,
+            @RequestParam Long pocketId,
+            @RequestParam(required = false)
+            LocalDate startMonth) {
+        var result = transactionServicePort.getTransactionsByPocketId(pocketId, startMonth);
+        var transactions = transactionResponseMapper
+                .toTransactionResponseList(result);
+
+        ApiResponse<List<TransactionResponse>> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                null,
+                transactions,
+                request.getRequestURI(),
+                System.currentTimeMillis()
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
     private String currentUrl() {
         return ServletUriComponentsBuilder.fromCurrentRequest().toUriString();
     }
