@@ -10,5 +10,5 @@ public interface IGoalServicePort {
     Goal createNewGoal(Goal goal);
     List<Goal> getAllGoalsByUserId();
     Goal getGoalById(Long goalId);
-    void makeDepositOrWithdraw(Long goalId, BigDecimal amount, GoalTransactionType type);
+    void makeDepositOrWithdraw(Long goalId, Long pocketId, BigDecimal amount, GoalTransactionType type);
 }

@@ -3,6 +3,7 @@ package com.fyrdev.monyia.domain.api.usecase;
 import com.fyrdev.monyia.configuration.exceptionhandler.ResourceNotFoundException;
 import com.fyrdev.monyia.domain.api.ICategoryServicePort;
 import com.fyrdev.monyia.domain.api.IGoalServicePort;
+import com.fyrdev.monyia.domain.api.IPocketServicePort;
 import com.fyrdev.monyia.domain.api.ITransactionServicePort;
 import com.fyrdev.monyia.domain.exception.InsufficientBalanceException;
 import com.fyrdev.monyia.domain.model.Category;
@@ -26,17 +27,19 @@ public class GoalUseCase implements IGoalServicePort {
     private final AITextClassifierPort aiTextClassifierPort;
     private final ITransactionServicePort transactionServicePort;
     private final ICategoryServicePort categoryServicePort;
+    private final IPocketServicePort pocketServicePort;
 
     public GoalUseCase(IGoalPersistencePort goalPersistencePort,
                        IAuthenticationPort authenticationPort,
                        AITextClassifierPort aiTextClassifierPort,
                        ITransactionServicePort transactionServicePort,
-                       ICategoryServicePort categoryServicePort) {
+                       ICategoryServicePort categoryServicePort, IPocketServicePort pocketServicePort) {
         this.goalPersistencePort = goalPersistencePort;
         this.authenticationPort = authenticationPort;
         this.aiTextClassifierPort = aiTextClassifierPort;
         this.transactionServicePort = transactionServicePort;
         this.categoryServicePort = categoryServicePort;
+        this.pocketServicePort = pocketServicePort;
     }
 
 
@@ -71,19 +74,33 @@ public class GoalUseCase implements IGoalServicePort {
     }
 
     @Override
-    public void makeDepositOrWithdraw(Long goalId, BigDecimal amount, GoalTransactionType type) {
-        Long userId = authenticationPort.getAuthenticatedUserId();
+    public void makeDepositOrWithdraw(Long goalId, Long pocketId, BigDecimal amount, GoalTransactionType type) {
         Goal goal = getGoalById(goalId);
-        String categoryName = setCategoryName(type);
-        Category category = categoryServicePort.getCategoryByName(categoryName);
+
+        if (type.equals(GoalTransactionType.DEPOSIT)) {
+            if (pocketServicePort.isPocketBalanceSufficient(pocketId, amount)) {
+                throw new InsufficientBalanceException(DomainConstants.INSUFFICIENT_BALANCE_MESSAGE);
+            }
+        }
 
         if (amount.doubleValue() <= 0) {
             throw new InsufficientBalanceException(DomainConstants.INVALID_DEPOSIT_AMOUNT);
         }
 
+        if (type.equals(GoalTransactionType.WITHDRAWAL)) {
+            BigDecimal result = goal.getAmount().subtract(goal.getBalance());
+            if (amount.doubleValue() < result.doubleValue()) {
+                throw new InsufficientBalanceException(DomainConstants.INSUFFICIENT_BALANCE_MESSAGE);
+            }
+        }
+
         if (goal.getBalance().doubleValue() < amount.doubleValue()) {
             throw new InsufficientBalanceException(DomainConstants.INSUFFICIENT_BALANCE_MESSAGE);
         }
+
+        Long userId = authenticationPort.getAuthenticatedUserId();
+        String categoryName = setCategoryName(type);
+        Category category = categoryServicePort.getCategoryByName(categoryName);
 
         goal.setBalance(updateBalance(type, amount, goal.getBalance()));
         goal.setUserId(userId);
@@ -98,34 +115,34 @@ public class GoalUseCase implements IGoalServicePort {
         transaction.setPeriodicity(Periodicity.ONCE);
         transaction.setCategoryId(category.getId());
         transaction.setGoalId(goal.getId());
-        transaction.setPocketId(null);
+        transaction.setPocketId(pocketId);
 
         transactionServicePort.saveNewTransaction(transaction);
 
     }
 
-    BigDecimal updateBalance(GoalTransactionType type, BigDecimal amount, BigDecimal currentBalance) {
+    private BigDecimal updateBalance(GoalTransactionType type, BigDecimal amount, BigDecimal currentBalance) {
         return type.equals(GoalTransactionType.DEPOSIT) ?
                 currentBalance.subtract(amount) :
                 currentBalance.add(amount);
     }
 
-    TransactionType setTransactionType(GoalTransactionType type) {
+    private TransactionType setTransactionType(GoalTransactionType type) {
         return type.equals(GoalTransactionType.DEPOSIT) ?
-                TransactionType.INCOME :
-                TransactionType.EXPENSE;
+                TransactionType.EXPENSE :
+                TransactionType.INCOME;
     }
 
-    String setCategoryName(GoalTransactionType type) {
+    private String setCategoryName(GoalTransactionType type) {
         return type.equals(GoalTransactionType.DEPOSIT) ?
                 "Depósito" :
                 "Retiro";
     }
 
-    String setDescription(GoalTransactionType type, String goalName) {
+    private String setDescription(GoalTransactionType type, String goalName) {
         return type.equals(GoalTransactionType.DEPOSIT) ?
                 "Depósito a meta " + goalName :
-                "Retiro de meta" + goalName;
+                "Retiro de meta " + goalName;
     }
 
 }
