@@ -12,6 +12,7 @@ import com.fyrdev.monyia.domain.api.ILoanServicePort;
 import com.fyrdev.monyia.domain.api.IPocketServicePort;
 import com.fyrdev.monyia.domain.api.ITransactionServicePort;
 import com.fyrdev.monyia.domain.model.dto.LoanTransactionsResponse;
+import com.fyrdev.monyia.domain.model.dto.TotalBalanceLoanedResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -141,6 +142,25 @@ public class LoanController {
                 HttpStatus.OK.value(),
                 "Pago realizado correctamente",
                 null,
+                request.getRequestURI(),
+                System.currentTimeMillis()
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/total-loaned")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<TotalBalanceLoanedResponse>> getTotalLoanedBalance(
+            HttpServletRequest request) {
+        Double balance = loanServicePort.totalLoaned();
+
+        TotalBalanceLoanedResponse totalBalanceLoanedResponse = new TotalBalanceLoanedResponse(balance);
+
+        ApiResponse<TotalBalanceLoanedResponse> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                null,
+                totalBalanceLoanedResponse,
                 request.getRequestURI(),
                 System.currentTimeMillis()
         );
