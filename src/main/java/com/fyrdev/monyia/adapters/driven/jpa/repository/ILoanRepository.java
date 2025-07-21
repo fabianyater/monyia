@@ -52,4 +52,21 @@ public interface ILoanRepository extends JpaRepository<LoanEntity, Long> {
             @Param("userId")
             Long userId
     );
+
+    @Query(value = """
+            select
+            	sum(l.balance)
+            from
+            	loans l
+            inner join pockets p
+            on
+            	l.pocket_entity_id = p.id
+            inner join users u
+            on
+            	p.user_entity_id = u.id
+            where
+            	u.id = :id
+            """, nativeQuery = true)
+    Double sumTotalBalance(@Param("id") Long userId);
+
 }

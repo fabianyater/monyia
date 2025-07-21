@@ -36,4 +36,9 @@ public class LoanAdapter implements ILoanPersistencePort {
                 .map(loanEntityMapper::toLoan)
                 .orElse(null);
     }
+
+    @Override
+    public Double totalLoaned(Long userId) {
+        return loanRepository.sumTotalBalance(userId);
+    }
 }
