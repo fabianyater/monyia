@@ -1,6 +1,5 @@
 package com.fyrdev.monyia.adapters.driven.jpa.adapter;
 
-import com.fyrdev.monyia.domain.model.Pocket;
 import com.fyrdev.monyia.domain.model.dto.GoalTransactionsResponse;
 import com.fyrdev.monyia.domain.model.dto.LoanTransactionsResponse;
 import com.fyrdev.monyia.domain.model.dto.TransactionResponseSummary;
@@ -18,7 +17,6 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Locale;
 
 @RequiredArgsConstructor
 public class TransactionAdapter implements ITransactionPersistencePort {
@@ -79,7 +77,7 @@ public class TransactionAdapter implements ITransactionPersistencePort {
     @Override
     public List<TransactionResponseSummary> listTransactionsByCategory(Long pocketId, Long userId, Long categoryId, TransactionType transactionType, String categoryName) {
 
-        var result = transactionRepository
+        return transactionRepository
                 .findTransactionsByFilters(pocketId, userId, categoryId, transactionType.name(), categoryName)
                 .stream()
                 .map(obj -> new TransactionResponseSummary(
@@ -88,11 +86,10 @@ public class TransactionAdapter implements ITransactionPersistencePort {
                         ((BigDecimal) obj[2]).doubleValue(),
                         ((Timestamp) obj[3]).toLocalDateTime().toLocalDate(),
                         (String) obj[4],
-                        (String) obj[5]
+                        (String) obj[5],
+                        null
                 ))
                 .toList();
-
-        return result;
     }
 
     @Override
@@ -134,9 +131,29 @@ public class TransactionAdapter implements ITransactionPersistencePort {
     }
 
     @Override
-    public List<Transaction> getLatestTransactionsByPocketIdAndUserId(Long pocketId, Long userId) {
-        var transactions = transactionRepository.findByPocketEntity_IdAndPocketEntity_UserEntity_Id(pocketId, userId);
+    public List<Transaction> getLatestTransactions(Long pocketId, Long userId) {
+        var transactions = transactionRepository.findLatestTransactions(pocketId, userId);
         return transactionEntityMapper.toTransactionLs(transactions);
+    }
+
+    @Override
+    public List<TransactionResponseSummary> getTransactions(Long pocketId, Long userId, LocalDate startMonth) {
+        LocalDateTime startDate = startMonth.atStartOfDay();
+        LocalDateTime endDate = startDate.plusMonths(1);
+
+        return transactionRepository
+                .findByPocketAndUserAndMonth(pocketId, userId, startDate, endDate)
+                .stream()
+                .map(obj -> new TransactionResponseSummary(
+                        obj.getId(),
+                        obj.getDescription(),
+                        obj.getAmount().doubleValue(),
+                        obj.getDate().toLocalDate(),
+                        obj.getCategoryEntity().getName(),
+                        obj.getCategoryEntity().getDefaultEmoji(),
+                        obj.getTransactionType().name()
+                ))
+                .toList();
     }
 
     private LocalDateTime getStartOfMonth(LocalDateTime startDate) {
