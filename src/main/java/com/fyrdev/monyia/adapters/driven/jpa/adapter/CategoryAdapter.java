@@ -15,8 +15,12 @@ public class CategoryAdapter implements ICategoryPersistencePort {
     private final ICategoryEntityMapper categoryEntityMapper;
 
     @Override
-    public void saveNewCategory(Category category) {
-        categoryRepository.save(categoryEntityMapper.toEntity(category));
+    public Category saveNewCategory(Category category) {
+        CategoryEntity categoryEntity = categoryEntityMapper.toEntity(category);
+
+        categoryRepository.save(categoryEntity);
+
+        return categoryEntityMapper.toCategory(categoryEntity);
     }
 
     @Override
@@ -32,9 +36,21 @@ public class CategoryAdapter implements ICategoryPersistencePort {
     }
 
     @Override
-    public Category getCategoryById(Long categoryId) {
-        return categoryRepository.findById(categoryId)
+    public Category getCategoryByIdAndUser(Long categoryId, Long userId) {
+        return categoryRepository.findByIdAndUserEntity_Id(categoryId, userId)
                 .map(categoryEntityMapper::toCategory)
                 .orElse(null);
+    }
+
+    @Override
+    public Category getCategoryByName(String category, Long userId) {
+        return categoryRepository.findByNameAndUserEntity_Id(category, userId)
+                .map(categoryEntityMapper::toCategory)
+                .orElse(null);
+    }
+
+    @Override
+    public void updateDefaultEmoji(String categoryName, String newEmoji) {
+        categoryRepository.updateDefaultEmojiByName(newEmoji, categoryName);
     }
 }

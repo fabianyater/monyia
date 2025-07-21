@@ -1,33 +1,65 @@
 package com.fyrdev.monyia.adapters.driving.http.controller;
 
 import com.fyrdev.monyia.adapters.driving.http.dto.request.UserRequest;
+import com.fyrdev.monyia.adapters.driving.http.dto.response.UserResponse;
 import com.fyrdev.monyia.adapters.driving.http.mapper.IUserRequestMapper;
+import com.fyrdev.monyia.configuration.exceptionhandler.ApiResponse;
 import com.fyrdev.monyia.domain.api.IUserServicePort;
+import com.fyrdev.monyia.domain.model.User;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.fyrdev.monyia.domain.util.DomainConstants.USER_ID;
+import static com.fyrdev.monyia.domain.util.DomainConstants.USER_SUCCESSFULLY_REGISTERED_MESSAGE;
 
 @RestController
-@RequestMapping(UserController.API_V_1_USERS)
+@RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
-    protected static final String API_V_1_USERS = "/api/v1/users";
     private final IUserServicePort userServicePort;
     private final IUserRequestMapper userRequestMapper;
 
-    @PostMapping
-    public ResponseEntity<Void> saveNewUser(@Valid @RequestBody UserRequest userRequest) {
+    @PostMapping("/")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> saveNewUser(@Valid @RequestBody UserRequest userRequest, HttpServletRequest request) {
         var user = userRequestMapper.toUser(userRequest);
-        userServicePort.saveNewUser(user);
+        User savedUser = userServicePort.saveNewUser(user);
 
-        URI location = URI.create(API_V_1_USERS.concat("/") + user.getId());
+        Map<String, Object> userData = new HashMap<>();
+        userData.put(USER_ID, savedUser.getId());
 
-        return ResponseEntity.created(location).build();
+        ApiResponse<Map<String, Object>> response = new ApiResponse<>(
+                HttpStatus.CREATED.value(),
+                USER_SUCCESSFULLY_REGISTERED_MESSAGE,
+                userData,
+                request.getRequestURI() + savedUser.getId(),
+                System.currentTimeMillis()
+        );
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/{userId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<UserResponse>> getUser(@Valid @PathVariable("userId") Long userId, HttpServletRequest request) {
+        User user = userServicePort.getUserById(userId);
+
+        ApiResponse<UserResponse> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                null,
+                new UserResponse(user.getName(), user.getEmail(), user.getColor()),
+                request.getRequestURI() + user.getId(),
+                System.currentTimeMillis()
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

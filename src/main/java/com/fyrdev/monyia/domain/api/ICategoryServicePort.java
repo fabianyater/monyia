@@ -5,6 +5,9 @@ import com.fyrdev.monyia.domain.model.Category;
 import java.util.List;
 
 public interface ICategoryServicePort {
-    void saveNewCategory(Category category);
+    Category saveNewCategory(Category category);
     List<Category> getAllCategories();
+    Long getCategoryIdByName(String category);
+    Category getCategoryByName(String name);
+    void updateDefaultEmoji(String categoryName, String newEmoji);
 }

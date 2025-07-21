@@ -1,16 +1,31 @@
 package com.fyrdev.monyia.domain.model;
 
+import java.util.List;
+
 public class Category {
     private Long id;
     private String name;
-    private String emoji;
+    private List<String> emojis;
+    private String defaultEmoji;
     private Long userId;
 
-    public Category(Long id, String name, String emoji, Long userId) {
+    public Category() {
+    }
+
+    public Category(Long id, String name, List<String> emojis, String defaultEmoji, Long userId) {
         this.id = id;
         this.name = name;
-        this.emoji = emoji;
+        this.emojis = emojis;
+        this.defaultEmoji = defaultEmoji;
         this.userId = userId;
+    }
+
+    public String getDefaultEmoji() {
+        return defaultEmoji;
+    }
+
+    public void setDefaultEmoji(String defaultEmoji) {
+        this.defaultEmoji = defaultEmoji;
     }
 
     public Long getId() {
@@ -29,12 +44,12 @@ public class Category {
         this.name = name;
     }
 
-    public String getEmoji() {
-        return emoji;
+    public List<String> getEmojis() {
+        return emojis;
     }
 
-    public void setEmoji(String emoji) {
-        this.emoji = emoji;
+    public void setEmojis(List<String> emojis) {
+        this.emojis = emojis;
     }
 
     public Long getUserId() {

@@ -11,14 +11,33 @@ spring:
       format_sql: true
       dialect: org.hibernate.dialect.PostgreSQL10Dialect
       ddl-auto: update
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/monyia
-    username: postgres
-    password: postgres
 
 jwt:
   secret:
     key: ${JWT_SECRET_KEY}
   expiration:
     time: 1800000
+
+---
+
+spring:
+  profiles:
+    activate:
+      on-profile: dev
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/monyia
+    username: postgres
+    password: postgres
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${DB_CONNECTION}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}

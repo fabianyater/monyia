@@ -40,6 +40,9 @@ public class UserEntity implements UserDetails {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
+    @Column(name = "color")
+    private String color;
+
     @Column(name = "password", nullable = false)
     private String password;
 

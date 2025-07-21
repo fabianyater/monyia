@@ -11,4 +11,5 @@ public class CategoryRequest {
     @NotNull(message = "Category id cannot be null")
     @NotBlank(message = "Category name cannot be empty")
     private String name;
+    private Long categoryId;
 }

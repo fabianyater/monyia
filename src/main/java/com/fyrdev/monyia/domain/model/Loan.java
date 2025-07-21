@@ -1,0 +1,115 @@
+package com.fyrdev.monyia.domain.model;
+
+import com.fyrdev.monyia.domain.model.enums.LoanStatus;
+import com.fyrdev.monyia.domain.model.enums.LoanType;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+public class Loan {
+    private Long id;
+    private BigDecimal amount;
+    private BigDecimal balance;
+    private String loanParty;
+    private String description;
+    private LoanType loanType;
+    private LocalDateTime startDate;
+    private LoanStatus loanStatus;
+    private Long pocketId;
+
+    public Loan() {
+    }
+
+    public Loan(
+            Long id,
+            BigDecimal amount,
+            BigDecimal balance,
+            String loanParty,
+            String description,
+            LoanType loanType,
+            LocalDateTime startDate,
+            LoanStatus loanStatus,
+            Long pocketId) {
+        this.id = id;
+        this.amount = amount;
+        this.balance = balance;
+        this.loanParty = loanParty;
+        this.description = description;
+        this.loanType = loanType;
+        this.startDate = startDate;
+        this.loanStatus = loanStatus;
+        this.pocketId = pocketId;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public BigDecimal getBalance() {
+        return balance;
+    }
+
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
+    }
+
+    public String getLoanParty() {
+        return loanParty;
+    }
+
+    public void setLoanParty(String loanParty) {
+        this.loanParty = loanParty;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public LoanType getLoanType() {
+        return loanType;
+    }
+
+    public void setLoanType(LoanType loanType) {
+        this.loanType = loanType;
+    }
+
+    public LocalDateTime getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDateTime startDate) {
+        this.startDate = startDate;
+    }
+
+    public LoanStatus getLoanStatus() {
+        return loanStatus;
+    }
+
+    public void setLoanStatus(LoanStatus loanStatus) {
+        this.loanStatus = loanStatus;
+    }
+
+    public Long getPocketId() {
+        return pocketId;
+    }
+
+    public void setPocketId(Long pocketId) {
+        this.pocketId = pocketId;
+    }
+}
