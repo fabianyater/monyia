@@ -17,7 +17,7 @@ public interface ITransactionServicePort {
     BigDecimal getMonthlyIncome(Long pocketId, LocalDateTime startDate);
     BigDecimal getMonthlyExpense(Long pocketId, LocalDateTime startDate);
     List<TransactionSummaryByCategoriesResponse> getTransactionSummaryByCategories(Long pocketId, TransactionType transactionType, LocalDateTime startDate);
-    List<TransactionResponseSummary> listTransactionsByCategory(Long pocketId, TransactionType transactionType, String categoryName, LocalDate startDate, LocalDate endDate);
+    List<TransactionResponseSummary> listTransactionsByCategory(Long pocketId, TransactionType transactionType, String categoryName, LocalDateTime startDate, LocalDateTime endDate);
     List<LoanTransactionsResponse> findAllTransactionsByLoanId(Long loanId, String loanType);
     List<GoalTransactionsResponse> findAllTransactionsByGoalId(Long goalId);
     Double sumByUserAndDateRangeAndType(Long pocketId, LocalDateTime startDate, LocalDateTime endDate, TransactionType type);

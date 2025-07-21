@@ -86,7 +86,7 @@ public class TransactionUseCase implements ITransactionServicePort {
     }
 
     @Override
-    public List<TransactionResponseSummary> listTransactionsByCategory(Long pocketId, TransactionType transactionType, String categoryName, LocalDate startDate, LocalDate endDate) {
+    public List<TransactionResponseSummary> listTransactionsByCategory(Long pocketId, TransactionType transactionType, String categoryName, LocalDateTime startDate, LocalDateTime endDate) {
         Long userId = authenticationPort.getAuthenticatedUserId();
         Category category = categoryPersistencePort.getCategoryByName(categoryName, userId);
 
