@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -145,7 +146,10 @@ public class PocketUseCase implements IPocketServicePort {
     @Override
     public List<Pocket> getPockets() {
         Long userId = authenticationPort.getAuthenticatedUserId();
-        return pocketPersistencePort.getPocketsByUserId(userId);
+        return pocketPersistencePort.getPocketsByUserId(userId)
+                .stream()
+                .sorted(Comparator.comparing(Pocket::getId))
+                .toList();
     }
 
     @Override
