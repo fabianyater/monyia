@@ -84,7 +84,7 @@ public class TransactionAdapter implements ITransactionPersistencePort {
                         (Long) obj[0],
                         (String) obj[1],
                         ((BigDecimal) obj[2]).doubleValue(),
-                        ((Timestamp) obj[3]).toLocalDateTime().toLocalDate(),
+                        ((Timestamp) obj[3]).toLocalDateTime(),
                         (String) obj[4],
                         (String) obj[5],
                         null
@@ -148,7 +148,7 @@ public class TransactionAdapter implements ITransactionPersistencePort {
                         obj.getId(),
                         obj.getDescription(),
                         obj.getAmount().doubleValue(),
-                        obj.getDate().toLocalDate(),
+                        obj.getDate(),
                         obj.getCategoryEntity().getName(),
                         obj.getCategoryEntity().getDefaultEmoji(),
                         obj.getTransactionType().name()
