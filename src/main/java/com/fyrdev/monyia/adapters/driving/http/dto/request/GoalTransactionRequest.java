@@ -4,5 +4,5 @@ import com.fyrdev.monyia.domain.model.enums.GoalTransactionType;
 
 import java.math.BigDecimal;
 
-public record GoalTransactionRequest(Long goalId, BigDecimal amount, GoalTransactionType type) {
+public record GoalTransactionRequest(Long goalId, Long pocketId, BigDecimal amount, GoalTransactionType type) {
 }

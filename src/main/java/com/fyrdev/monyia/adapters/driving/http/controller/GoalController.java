@@ -93,10 +93,11 @@ public class GoalController {
             @RequestBody GoalTransactionRequest goalTransactionRequest,
             HttpServletRequest request) {
         Long goalId = goalTransactionRequest.goalId();
+        Long pocketId = goalTransactionRequest.pocketId();
         BigDecimal amount = goalTransactionRequest.amount();
         var type = goalTransactionRequest.type();
 
-        goalServicePort.makeDepositOrWithdraw(goalId, amount, type);
+        goalServicePort.makeDepositOrWithdraw(goalId, pocketId, amount, type);
 
         ApiResponse<Void> response = new ApiResponse<>(
                 HttpStatus.OK.value(),
@@ -115,10 +116,11 @@ public class GoalController {
             @RequestBody GoalTransactionRequest goalTransactionRequest,
             HttpServletRequest request) {
         Long goalId = goalTransactionRequest.goalId();
+        Long pocketId = goalTransactionRequest.pocketId();
         BigDecimal amount = goalTransactionRequest.amount();
         var type = goalTransactionRequest.type();
 
-        goalServicePort.makeDepositOrWithdraw(goalId, amount, type);
+        goalServicePort.makeDepositOrWithdraw(goalId, pocketId, amount, type);
 
         ApiResponse<Void> response = new ApiResponse<>(
                 HttpStatus.OK.value(),
