@@ -134,4 +134,11 @@ public class LoanUseCase implements ILoanServicePort {
 
         transactionServicePort.saveNewTransaction(transaction);
     }
+
+    @Override
+    public Double totalLoaned() {
+        Long userId = authenticationPort.getAuthenticatedUserId();
+
+        return loanPersistencePort.totalLoaned(userId);
+    }
 }

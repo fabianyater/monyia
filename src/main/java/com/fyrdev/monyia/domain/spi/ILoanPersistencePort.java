@@ -9,4 +9,5 @@ public interface ILoanPersistencePort {
     Loan saveLoan(Loan loan);
     List<Loan> findAllLoans(Long userId);
     Loan findLoanDetails(Long loanId, Long userId);
+    Double totalLoaned(Long userId);
 }
