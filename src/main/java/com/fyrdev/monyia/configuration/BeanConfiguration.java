@@ -140,6 +140,8 @@ public class BeanConfiguration {
                 authenticationPort(),
                 aiTextClassifierPort(),
                 transactionServicePort(),
-                categoryServicePort());
+                categoryServicePort(),
+                pocketServicePort()
+        );
     }
 }
