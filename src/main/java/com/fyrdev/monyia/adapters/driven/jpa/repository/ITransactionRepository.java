@@ -2,41 +2,36 @@ package com.fyrdev.monyia.adapters.driven.jpa.repository;
 
 import com.fyrdev.monyia.adapters.driven.jpa.entity.TransactionEntity;
 import com.fyrdev.monyia.domain.model.enums.TransactionType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ITransactionRepository extends JpaRepository<TransactionEntity, Long> {
     @Query("""
-                SELECT COALESCE(SUM(t.amount), 0)
+                SELECT COALESCE(SUM(t.amount), 0),
+                       CASE t.transactionType
+                           WHEN 'INCOME' THEN 'INCOME'
+                           ELSE 'EXPENSE'
+                       END AS type
                 FROM TransactionEntity t
-                WHERE t.transactionType = 'INCOME'
+                WHERE t.date >= :startOfMonth AND t.date < :startOfNextMonth
                   AND t.pocketEntity.id = :pocketId
                   AND t.pocketEntity.userEntity.id = :userId
-                  AND t.date >= :startOfMonth AND t.date < :startOfNextMonth
+                GROUP BY CASE t.transactionType
+                           WHEN 'INCOME' THEN 'INCOME'
+                           ELSE 'EXPENSE'
+                        END
             """)
-    BigDecimal getMonthlyIncome(@Param("pocketId") Long pocketId,
-                                @Param("userId") Long userId,
-                                @Param("startOfMonth") LocalDateTime startOfMonth,
-                                @Param("startOfNextMonth") LocalDateTime startOfNextMonth);
+    List<Object[]> getMonthlyIncomeAndExpenseSummary(@Param("pocketId") Long pocketId,
+                                                     @Param("userId") Long userId,
+                                                     @Param("startOfMonth") LocalDateTime startOfMonth,
+                                                     @Param("startOfNextMonth") LocalDateTime startOfNextMonth);
 
-    @Query("""
-                SELECT COALESCE(SUM(t.amount), 0)
-                FROM TransactionEntity t
-                WHERE t.transactionType = 'EXPENSE'
-                  AND t.pocketEntity.id = :pocketId
-                  AND t.pocketEntity.userEntity.id = :userId
-                  AND t.date >= :startOfMonth AND t.date < :startOfNextMonth
-            """)
-    BigDecimal getMonthlyExpense(@Param("pocketId") Long pocketId,
-                                 @Param("userId") Long userId,
-                                 @Param("startOfMonth") LocalDateTime startOfMonth,
-                                 @Param("startOfNextMonth") LocalDateTime startOfNextMonth);
 
     @Query("""
             SELECT c.id, c.name, c.defaultEmoji, SUM(t.amount)
@@ -63,7 +58,10 @@ public interface ITransactionRepository extends JpaRepository<TransactionEntity,
                 t.amount as amount,
                 t.date,
                 c.name as categoryName,
-                c.default_emoji as categoryEmoji
+                c.default_emoji as categoryEmoji,
+                t.transaction_type,
+                t.is_transfer,
+                p."name"
             FROM
                 transactions t
             INNER JOIN
@@ -142,22 +140,26 @@ public interface ITransactionRepository extends JpaRepository<TransactionEntity,
 
     @Query(value = """
             select
-                sum(t.amount)
+            	t.id,
+                b.name,
+            	c.default_emoji,
+            	c."name" as "categoryName",
+            	t.amount,
+            	t."date",
+            	t.transaction_type
             from
-                transactions t
-            inner join pockets p on t.pocket_entity_id = p.id
+            	budgets b
+            inner join transactions t
+            on
+            	t.budget_entity_id = b.id
+            inner join categories c
+            on
+            	t.category_entity_id = c.id
             where
-                p.user_entity_id = :userId
-                and p.id = :pocketId
-                and t.transaction_type = :type
-                and t.date between :startDate and :endDate
+            	b.id = :budgetId
+            	and b.user_entity_id = :userId
             """, nativeQuery = true)
-    Double sumByUserAndPocketAndDateRangeAndType(
-            @Param("userId") Long userId,
-            @Param("pocketId") Long pocketId,
-            @Param("type") String type,
-            @Param("startDate") LocalDateTime startDate,
-            @Param("endDate") LocalDateTime endDate);
+    List<Object[]> findBudgetTransactionsByBudgetId(@Param("budgetId") Long goalId, @Param("userId") Long userId);
 
     @Query("select t from TransactionEntity t where t.pocketEntity.id = ?1 and t.pocketEntity.userEntity.id = ?2")
     List<TransactionEntity> findLatestTransactions(Long id, Long id1);
@@ -175,4 +177,9 @@ public interface ITransactionRepository extends JpaRepository<TransactionEntity,
             @Param("endDate") LocalDateTime endDate
     );
 
+    @Query("""
+            SELECT t FROM TransactionEntity t
+                WHERE t.pocketEntity.userEntity.id = :id
+            """)
+    Page<TransactionEntity> findAllTransactionsByUserId(Long id, Pageable pageable);
 }

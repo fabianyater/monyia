@@ -1,15 +1,14 @@
 package com.fyrdev.monyia.adapters.driving.http.controller;
 
-import com.fyrdev.monyia.adapters.driving.http.dto.request.GoalTransactionRequest;
 import com.fyrdev.monyia.adapters.driving.http.dto.request.GoalRequest;
+import com.fyrdev.monyia.adapters.driving.http.dto.request.GoalTransactionRequest;
 import com.fyrdev.monyia.adapters.driving.http.dto.response.GoalResponse;
+import com.fyrdev.monyia.adapters.driving.http.dto.response.TransactionResponse;
 import com.fyrdev.monyia.adapters.driving.http.mapper.IGoalRequestMapper;
 import com.fyrdev.monyia.adapters.driving.http.mapper.IGoalResponseMapper;
 import com.fyrdev.monyia.configuration.exceptionhandler.ApiResponse;
 import com.fyrdev.monyia.domain.api.IGoalServicePort;
 import com.fyrdev.monyia.domain.api.ITransactionServicePort;
-import com.fyrdev.monyia.domain.model.dto.GoalTransactionsResponse;
-import com.fyrdev.monyia.domain.model.dto.LoanTransactionsResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -135,12 +134,12 @@ public class GoalController {
 
     @GetMapping("/{goalId}/transactions")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<ApiResponse<List<GoalTransactionsResponse>>> getTransactionsByLoanId(
+    public ResponseEntity<ApiResponse<List<TransactionResponse>>> getTransactionsByLoanId(
             @PathVariable Long goalId,
             HttpServletRequest request) {
-        List<GoalTransactionsResponse> transactions = transactionServicePort.findAllTransactionsByGoalId(goalId);
+        List<TransactionResponse> transactions = transactionServicePort.findAllTransactionsByGoalId(goalId);
 
-        ApiResponse<List<GoalTransactionsResponse>> response = new ApiResponse<>(
+        ApiResponse<List<TransactionResponse>> response = new ApiResponse<>(
                 HttpStatus.OK.value(),
                 null,
                 transactions,
@@ -150,5 +149,4 @@ public class GoalController {
 
         return ResponseEntity.ok(response);
     }
-
 }

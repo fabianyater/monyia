@@ -1,4 +1,15 @@
 package com.fyrdev.monyia.adapters.driving.http.dto.response;
 
-public record TransactionResponse(Long id, String description, Long value, String category, String emoji, String date, String type) {
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+public record TransactionResponse(Long id,
+                                  String description,
+                                  BigDecimal value,
+                                  LocalDateTime date,
+                                  String category,
+                                  String emoji,
+                                  String type,
+                                  String pocketName,
+                                  Boolean isTransfer) {
 }

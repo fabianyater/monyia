@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,7 +24,7 @@ public interface IPocketRepository extends JpaRepository<PocketEntity, Long> {
     PocketEntity findByBalance(Long balance);
 
     @Query("select p.balance from PocketEntity p where p.id = ?1 and p.userEntity.id = ?2")
-    Double findBalanceById(Long id, Long userId);
+    BigDecimal findBalanceById(Long id, Long userId);
 
     @Query("select sum(p.balance) from PocketEntity p where p.userEntity.id = ?1 and p.excludeBalance = false")
     Double sumByUserEntity_Id(Long id);

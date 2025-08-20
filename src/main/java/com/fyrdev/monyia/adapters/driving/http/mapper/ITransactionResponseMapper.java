@@ -16,6 +16,7 @@ public interface ITransactionResponseMapper {
 
     @Mapping(target = "value", source = "amount")
     @Mapping(target = "type", source = "transactionType")
+    @Mapping(target = "isTransfer", source = "transfer")
     TransactionResponse toTransactionResponse(Transaction transaction);
 
     @Mapping(target = "value", source = "amount")

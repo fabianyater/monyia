@@ -2,7 +2,6 @@ package com.fyrdev.monyia.domain.api;
 
 import com.fyrdev.monyia.domain.model.Pocket;
 import com.fyrdev.monyia.domain.model.dto.PocketBalanceSummary;
-import com.fyrdev.monyia.domain.model.enums.TransactionType;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -18,4 +17,6 @@ public interface IPocketServicePort {
     boolean isPocketBalanceSufficient(Long pocketId, BigDecimal amount);
     void transferBetweenPockets(Long fromPocketId, Long toPocketId, BigDecimal amount);
     void updatePocketById(Long pocketId, Pocket pocket);
+    void updateBalanceById(BigDecimal balance, Long pocketId);
+    void makeTransactionWithPreviousBalance();
 }

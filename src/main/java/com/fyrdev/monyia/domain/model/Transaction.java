@@ -15,16 +15,18 @@ public class Transaction {
     private LocalDateTime date;
     private Periodicity periodicity;
     private TransactionType transactionType;
+    private Boolean transfer;
     private Long categoryId;
     private Long pocketId;
     private Long toPocketId;
     private Long loanId;
     private Long goalId;
+    private Long budgetId;
 
     public Transaction() {
     }
 
-    public Transaction(Long id, UUID uuid, String description, BigDecimal amount, LocalDateTime date, Periodicity periodicity, TransactionType transactionType, Long categoryId, Long pocketId, Long toPocketId, Long loanId, Long goalId) {
+    public Transaction(Long id, UUID uuid, String description, BigDecimal amount, LocalDateTime date, Periodicity periodicity, TransactionType transactionType, Boolean transfer, Long categoryId, Long pocketId, Long toPocketId, Long loanId, Long goalId, Long budgetId) {
         this.id = id;
         this.uuid = uuid;
         this.description = description;
@@ -32,10 +34,13 @@ public class Transaction {
         this.date = date;
         this.periodicity = periodicity;
         this.transactionType = transactionType;
+        this.transfer = transfer;
         this.categoryId = categoryId;
         this.pocketId = pocketId;
-        this.toPocketId = toPocketId;        this.loanId = loanId;
+        this.toPocketId = toPocketId;
+        this.loanId = loanId;
         this.goalId = goalId;
+        this.budgetId = budgetId;
     }
 
     public Long getId() {
@@ -132,5 +137,21 @@ public class Transaction {
 
     public void setGoalId(Long goalId) {
         this.goalId = goalId;
+    }
+
+    public Long getBudgetId() {
+        return budgetId;
+    }
+
+    public void setBudgetId(Long budgetId) {
+        this.budgetId = budgetId;
+    }
+
+    public Boolean getTransfer() {
+        return transfer;
+    }
+
+    public void setTransfer(Boolean transfer) {
+        this.transfer = transfer;
     }
 }

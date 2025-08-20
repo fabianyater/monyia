@@ -1,9 +1,11 @@
 package com.fyrdev.monyia.adapters.driving.http.controller;
 
+import com.fyrdev.monyia.adapters.driving.http.dto.request.IncrementLoanRequest;
 import com.fyrdev.monyia.adapters.driving.http.dto.request.LoanPaymentRequest;
 import com.fyrdev.monyia.adapters.driving.http.dto.request.LoanRequest;
 import com.fyrdev.monyia.adapters.driving.http.dto.response.LoanDetailResponse;
 import com.fyrdev.monyia.adapters.driving.http.dto.response.LoanResponse;
+import com.fyrdev.monyia.adapters.driving.http.dto.response.TransactionResponse;
 import com.fyrdev.monyia.adapters.driving.http.mapper.ILoanRequestMapper;
 import com.fyrdev.monyia.adapters.driving.http.mapper.ILoanResponseMapper;
 import com.fyrdev.monyia.adapters.driving.http.mapper.ITransactionResponseMapper;
@@ -11,7 +13,6 @@ import com.fyrdev.monyia.configuration.exceptionhandler.ApiResponse;
 import com.fyrdev.monyia.domain.api.ILoanServicePort;
 import com.fyrdev.monyia.domain.api.IPocketServicePort;
 import com.fyrdev.monyia.domain.api.ITransactionServicePort;
-import com.fyrdev.monyia.domain.model.dto.LoanTransactionsResponse;
 import com.fyrdev.monyia.domain.model.dto.TotalBalanceLoanedResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -108,13 +109,13 @@ public class LoanController {
 
     @GetMapping("/{loanId}/type/{loanType}/transactions")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<ApiResponse<List<LoanTransactionsResponse>>> getTransactionsByLoanId(
+    public ResponseEntity<ApiResponse<List<TransactionResponse>>> getTransactionsByLoanId(
             @PathVariable Long loanId,
             @PathVariable String loanType,
             HttpServletRequest request) {
-        List<LoanTransactionsResponse> transactions = transactionServicePort.findAllTransactionsByLoanId(loanId, loanType);
+        List<TransactionResponse> transactions = transactionServicePort.findAllTransactionsByLoanId(loanId, loanType);
 
-        ApiResponse<List<LoanTransactionsResponse>> response = new ApiResponse<>(
+        ApiResponse<List<TransactionResponse>> response = new ApiResponse<>(
                 HttpStatus.OK.value(),
                 null,
                 transactions,
@@ -161,6 +162,27 @@ public class LoanController {
                 HttpStatus.OK.value(),
                 null,
                 totalBalanceLoanedResponse,
+                request.getRequestURI(),
+                System.currentTimeMillis()
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/{loanId}/increment")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<Void>> updateLoanBalance(
+            @PathVariable("loanId")
+            Long loanId,
+            @RequestBody
+            IncrementLoanRequest loanRequest,
+            HttpServletRequest request) {
+        loanServicePort.incrementLoan(loanId, loanRequest.amount());
+
+        ApiResponse<Void> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                null,
+                null,
                 request.getRequestURI(),
                 System.currentTimeMillis()
         );

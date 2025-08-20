@@ -61,6 +61,12 @@ public class CategoryUseCase implements ICategoryServicePort {
     }
 
     @Override
+    public Category getCategoryById(Long id) {
+        Long userId = authenticationPort.getAuthenticatedUserId();
+        return categoryPersistencePort.getCategoryByIdAndUser(id, userId);
+    }
+
+    @Override
     public Category getCategoryByName(String name) {
         Category category = categoryPersistencePort.getCategoryByName(name, authenticationPort.getAuthenticatedUserId());
 
@@ -84,5 +90,19 @@ public class CategoryUseCase implements ICategoryServicePort {
             throw new ResourceNotFoundException(DomainConstants.CATEGORY_NOT_FOUND_MESSAGE);
         }
 
+    }
+
+    @Override
+    public Category getCategory(String name) {
+        Category category = categoryPersistencePort.getCategory(name);
+
+        if (category == null) {
+            Category newCategory = new Category();
+            newCategory.setName(name);
+
+            return saveNewCategory(newCategory);
+        }
+
+        return category;
     }
 }

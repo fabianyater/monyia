@@ -8,6 +8,7 @@ import com.fyrdev.monyia.adapters.driven.jpa.repository.*;
 import com.fyrdev.monyia.configuration.security.jwt.JwtUtils;
 import com.fyrdev.monyia.domain.api.*;
 import com.fyrdev.monyia.domain.api.usecase.*;
+import com.fyrdev.monyia.domain.helpers.PocketTransactionHelper;
 import com.fyrdev.monyia.domain.spi.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -30,6 +31,10 @@ public class BeanConfiguration {
     private final ILoanEntityMapper loanEntityMapper;
     private final IGoalRepository goalRepository;
     private final IGoalEntityMapper goalEntityMapper;
+    private final IBudgetRepository budgetRepository;
+    private final IBudgetEntityMapper budgetEntityMapper;
+    private final ISubscriptionRepository subscriptionRepository;
+    private final ISubscriptionEntityMapper subscriptionEntityMapper;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final BCryptPasswordEncoder passwordEncoder;
@@ -90,12 +95,17 @@ public class BeanConfiguration {
     }
 
     @Bean
+    public PocketTransactionHelper pocketTransactionHelper() {
+        return new PocketTransactionHelper(pocketPersistencePort(), transactionPersistencePort(), userPersistencePort());
+    }
+
+    @Bean
     public IPocketServicePort pocketServicePort() {
         return new PocketUseCase(
                 pocketPersistencePort(),
                 authenticationPort(),
                 aiTextClassifierPort(),
-                transactionServicePort(),
+                pocketTransactionHelper(),
                 categoryServicePort());
     }
 
@@ -108,9 +118,10 @@ public class BeanConfiguration {
     public ITransactionServicePort transactionServicePort() {
         return new TransactionUseCase(
                 transactionPersistencePort(),
-                pocketPersistencePort(),
                 authenticationPort(),
-                categoryPersistencePort());
+                categoryServicePort(),
+                budgetServicePort(),
+                pocketTransactionHelper());
     }
 
     @Bean
@@ -143,5 +154,25 @@ public class BeanConfiguration {
                 categoryServicePort(),
                 pocketServicePort()
         );
+    }
+
+    @Bean
+    public IBudgetPersistencePort budgetPersistencePort() {
+        return new BudgetAdapter(budgetRepository, budgetEntityMapper);
+    }
+
+    @Bean
+    public IBudgetServicePort budgetServicePort() {
+        return new BudgetUseCase(budgetPersistencePort(), authenticationPort(), categoryServicePort());
+    }
+
+    @Bean
+    public ISubscriptionPersistencePort subscriptionPersistencePort() {
+        return new SubscriptionsAdapter(subscriptionRepository, subscriptionEntityMapper);
+    }
+
+    @Bean
+    public ISubscriptionServicePort subscriptionServicePort() {
+        return new SubscriptionUseCase(subscriptionPersistencePort(), authenticationPort());
     }
 }

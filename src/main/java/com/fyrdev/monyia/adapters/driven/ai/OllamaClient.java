@@ -12,8 +12,6 @@ import java.time.Duration;
 
 public class OllamaClient implements AiClient {
     private final HttpClient httpClient;
-    private final String ollamaUrl = "http://127.0.0.1:1234/v1/chat/completions";
-    private final String modelName = "meta-llama-3.1-8b-instruct";
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public OllamaClient() {
@@ -24,6 +22,7 @@ public class OllamaClient implements AiClient {
 
     @Override
     public String sendPrompt(String prompt, String userText) {
+        String modelName = "meta-llama-3.1-8b-instruct";
         String requestBody = """
                 {
                   "model": "%s",
@@ -42,6 +41,8 @@ public class OllamaClient implements AiClient {
                   "stream": false
                 }
                 """.formatted(modelName, prompt, userText.replace("\"", "\\\""));
+
+        String ollamaUrl = "http://127.0.0.1:1234/v1/chat/completions";
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(ollamaUrl))

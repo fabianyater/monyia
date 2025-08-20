@@ -113,6 +113,7 @@ public class GoalUseCase implements IGoalServicePort {
         transaction.setTransactionType(setTransactionType(type));
         transaction.setDate(LocalDateTime.now());
         transaction.setPeriodicity(Periodicity.ONCE);
+        transaction.setTransfer(Boolean.FALSE);
         transaction.setCategoryId(category.getId());
         transaction.setGoalId(goal.getId());
         transaction.setPocketId(pocketId);

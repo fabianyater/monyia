@@ -16,6 +16,7 @@ public interface ITransactionEntityMapper {
     @Mapping(target = "pocketEntity.id", source = "pocketId")
     @Mapping(target = "loanEntity.id", source = "loanId")
     @Mapping(target = "goalEntity.id", source = "goalId")
+    @Mapping(target = "budgetEntity.id", source = "budgetId")
     TransactionEntity toEntity(Transaction transaction);
 
     @Mapping(target = "categoryId", source = "categoryEntity.id")
@@ -23,6 +24,7 @@ public interface ITransactionEntityMapper {
     @Mapping(target = "loanId", source = "loanEntity.id")
     @Mapping(target = "goalId", source = "goalEntity.id")
     @Mapping(target = "toPocketId", source = "destinationPocketEntity.id")
+    @Mapping(target = "budgetId", source = "budgetEntity.id")
     Transaction toTransaction(TransactionEntity transactionEntity);
     List<Transaction> toTransactionList(List<TransactionEntity> transactionEntities);
     List<Transaction> toTransactionLs(List<TransactionEntity> transactionEntities);

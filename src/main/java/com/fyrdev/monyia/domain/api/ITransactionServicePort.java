@@ -1,26 +1,23 @@
 package com.fyrdev.monyia.domain.api;
 
-import com.fyrdev.monyia.domain.model.dto.GoalTransactionsResponse;
-import com.fyrdev.monyia.domain.model.dto.LoanTransactionsResponse;
+import com.fyrdev.monyia.adapters.driving.http.dto.response.TransactionResponse;
 import com.fyrdev.monyia.domain.model.Transaction;
-import com.fyrdev.monyia.domain.model.dto.TransactionResponseSummary;
-import com.fyrdev.monyia.domain.model.dto.TransactionSummaryByCategoriesResponse;
+import com.fyrdev.monyia.domain.model.dto.*;
 import com.fyrdev.monyia.domain.model.enums.TransactionType;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ITransactionServicePort {
     Transaction saveNewTransaction(Transaction transaction);
-    BigDecimal getMonthlyIncome(Long pocketId, LocalDateTime startDate);
-    BigDecimal getMonthlyExpense(Long pocketId, LocalDateTime startDate);
+    List<IncomeAndExpenseSummary> getMonthlyIncomeAndExpenseSummary(Long pocketId, LocalDateTime startDate);
     List<TransactionSummaryByCategoriesResponse> getTransactionSummaryByCategories(Long pocketId, TransactionType transactionType, LocalDateTime startDate);
-    List<TransactionResponseSummary> listTransactionsByCategory(Long pocketId, TransactionType transactionType, String categoryName, LocalDateTime startDate, LocalDateTime endDate);
-    List<LoanTransactionsResponse> findAllTransactionsByLoanId(Long loanId, String loanType);
-    List<GoalTransactionsResponse> findAllTransactionsByGoalId(Long goalId);
-    Double sumByUserAndDateRangeAndType(Long pocketId, LocalDateTime startDate, LocalDateTime endDate, TransactionType type);
+    List<TransactionResponse> listTransactionsByCategory(Long pocketId, TransactionType transactionType, String categoryName, LocalDateTime startDate, LocalDateTime endDate);
+    List<TransactionResponse> findAllTransactionsByLoanId(Long loanId, String loanType);
+    List<TransactionResponse> findAllTransactionsByGoalId(Long goalId);
+    List<TransactionResponse> findAllTransactionsByBudgetId(Long budgetId);
     List<Transaction> getLatestTransactionsByPocketId(Long pocketId);
-    List<TransactionResponseSummary> getTransactionsByPocketId(Long pocketId, LocalDate startMonth);
+    List<TransactionResponse> getTransactionsByPocketId(Long pocketId, LocalDate startMonth);
+    List<TransactionResponse> getAllTransactionsWithFilters(QueryFilters filters, Integer page, Integer size, String order);
 }

@@ -11,4 +11,5 @@ public interface ILoanServicePort {
     Loan getLoanDetails(Long loanId);
     void makePayment(Long loanId, Long pocketId, BigDecimal amount);
     Double totalLoaned();
+    void incrementLoan(Long loanId, BigDecimal amount);
 }

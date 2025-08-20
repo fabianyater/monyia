@@ -10,7 +10,7 @@ public interface IPocketPersistencePort {
     void saveNewPocket(Pocket pocket);
     List<Pocket> getPocketsByUserId(Long userId);
     Pocket getPocketByIdAndUserId(Long pocketId, Long userId);
-    Double getBalance(Long pocketId, Long userId);
+    BigDecimal getBalance(Long pocketId, Long userId);
     int updateBalanceById(BigDecimal balance, Long pocketId);
     Double getTotalBalanceByUserId(Long userId);
 }

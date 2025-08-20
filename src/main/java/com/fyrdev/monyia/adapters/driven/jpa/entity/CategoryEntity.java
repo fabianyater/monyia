@@ -1,19 +1,14 @@
 package com.fyrdev.monyia.adapters.driven.jpa.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "categories")
@@ -38,5 +33,11 @@ public class CategoryEntity {
     @ManyToOne
     @JoinColumn(name = "user_entity_id")
     private UserEntity userEntity;
+
+    @ManyToMany
+    @JoinTable(name = "categories_userEntities",
+            joinColumns = @JoinColumn(name = "categoryEntity_id"),
+            inverseJoinColumns = @JoinColumn(name = "userEntities_id"))
+    private Set<UserEntity> userEntities = new LinkedHashSet<>();
 
 }

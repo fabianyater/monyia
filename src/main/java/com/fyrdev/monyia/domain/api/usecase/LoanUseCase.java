@@ -32,7 +32,7 @@ public class LoanUseCase implements ILoanServicePort {
     public LoanUseCase(IAuthenticationPort authenticationPort,
                        ILoanPersistencePort loanPersistencePort,
                        IPocketServicePort pocketServicePort,
-                       ICategoryServicePort categoryServicePort, 
+                       ICategoryServicePort categoryServicePort,
                        ITransactionServicePort transactionServicePort) {
         this.authenticationPort = authenticationPort;
         this.loanPersistencePort = loanPersistencePort;
@@ -41,6 +41,7 @@ public class LoanUseCase implements ILoanServicePort {
         this.transactionServicePort = transactionServicePort;
     }
 
+    //TODO: Loan no necesita esa relación con pocket
 
     @Override
     public void saveLoan(Loan loan) {
@@ -70,6 +71,7 @@ public class LoanUseCase implements ILoanServicePort {
         transaction.setTransactionType(loanType == LoanType.LENDER ? TransactionType.EXPENSE : TransactionType.INCOME);
         transaction.setDate(LocalDateTime.now());
         transaction.setPeriodicity(Periodicity.ONCE);
+        transaction.setTransfer(Boolean.FALSE);
         transaction.setCategoryId(existingCategory.getId());
         transaction.setLoanId(savedLoan.getId());
         transaction.setPocketId(pocketId);
@@ -140,5 +142,33 @@ public class LoanUseCase implements ILoanServicePort {
         Long userId = authenticationPort.getAuthenticatedUserId();
 
         return loanPersistencePort.totalLoaned(userId);
+    }
+
+    @Override
+    public void incrementLoan(Long loanId, BigDecimal amount) {
+        Loan loan = getLoanDetails(loanId);
+        BigDecimal currentAmount = loan.getAmount();
+
+        loan.setAmount(currentAmount.add(amount));
+        loan.setBalance(amount.add(loan.getBalance()));
+
+        String categoryName = loan.getLoanType() == LoanType.LENDER ? "Cobrar" : "Reembolsar";
+        Category category = categoryServicePort.getCategoryByName(categoryName);
+
+        Transaction transaction = new Transaction();
+
+        transaction.setAmount(amount);
+        transaction.setDescription(loan.getDescription());
+        transaction.setTransactionType(loan.getLoanType() == LoanType.LENDER ? TransactionType.EXPENSE : TransactionType.INCOME);
+        transaction.setDate(LocalDateTime.now());
+        transaction.setPeriodicity(Periodicity.ONCE);
+        transaction.setTransfer(Boolean.FALSE);
+        transaction.setCategoryId(category.getId());
+        transaction.setLoanId(loan.getId());
+        transaction.setPocketId(loan.getPocketId());
+
+        transactionServicePort.saveNewTransaction(transaction);
+
+        loanPersistencePort.saveLoan(loan);
     }
 }

@@ -1,8 +1,10 @@
 package com.fyrdev.monyia.domain.model.dto;
 
+import java.math.BigDecimal;
+
 public record PocketBalanceSummary(
-        Double currentBalance,
-        Double monthlyNetChange,
-        Double previousMonthlyNetChange,
-        Double balanceTrendPercentage) {
+        BigDecimal currentBalance,
+        BigDecimal monthlyNetChange,
+        BigDecimal previousMonthlyNetChange,
+        BigDecimal balanceTrendPercentage) {
 }

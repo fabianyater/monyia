@@ -7,6 +7,8 @@ import com.fyrdev.monyia.domain.model.User;
 import com.fyrdev.monyia.domain.spi.IUserPersistencePort;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 public class UserAdapter implements IUserPersistencePort {
     private final IUserRepository userRepository;
@@ -32,5 +34,10 @@ public class UserAdapter implements IUserPersistencePort {
         return userRepository.findById(id)
                 .map(userEntityMapper::toUser)
                 .orElse(null);
+    }
+
+    @Override
+    public List<User> getUsers() {
+        return userRepository.findAll().stream().map(userEntityMapper::toUser).toList();
     }
 }

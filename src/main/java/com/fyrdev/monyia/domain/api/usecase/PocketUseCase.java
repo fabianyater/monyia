@@ -3,43 +3,40 @@ package com.fyrdev.monyia.domain.api.usecase;
 import com.fyrdev.monyia.configuration.exceptionhandler.ResourceNotFoundException;
 import com.fyrdev.monyia.domain.api.ICategoryServicePort;
 import com.fyrdev.monyia.domain.api.IPocketServicePort;
-import com.fyrdev.monyia.domain.api.ITransactionServicePort;
-import com.fyrdev.monyia.domain.exception.InsufficientBalanceException;
+import com.fyrdev.monyia.domain.helpers.PocketTransactionHelper;
 import com.fyrdev.monyia.domain.model.Category;
 import com.fyrdev.monyia.domain.model.Pocket;
-import com.fyrdev.monyia.domain.model.Transaction;
+import com.fyrdev.monyia.domain.model.dto.IncomeAndExpenseSummary;
 import com.fyrdev.monyia.domain.model.dto.PocketBalanceSummary;
-import com.fyrdev.monyia.domain.model.enums.Periodicity;
 import com.fyrdev.monyia.domain.model.enums.TransactionType;
 import com.fyrdev.monyia.domain.spi.AITextClassifierPort;
 import com.fyrdev.monyia.domain.spi.IAuthenticationPort;
 import com.fyrdev.monyia.domain.spi.IPocketPersistencePort;
 import com.fyrdev.monyia.domain.util.DomainConstants;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class PocketUseCase implements IPocketServicePort {
     private final IPocketPersistencePort pocketPersistencePort;
     private final IAuthenticationPort authenticationPort;
     private final AITextClassifierPort aiTextClassifierPort;
-    private final ITransactionServicePort transactionServicePort;
+    private final PocketTransactionHelper pocketTransactionHelper;
     private final ICategoryServicePort categoryServicePort;
 
     public PocketUseCase(IPocketPersistencePort pocketPersistencePort,
                          IAuthenticationPort authenticationPort,
-                         AITextClassifierPort aiTextClassifierPort,
-                         ITransactionServicePort transactionServicePort,
-                         ICategoryServicePort categoryServicePort) {
+                         AITextClassifierPort aiTextClassifierPort, PocketTransactionHelper pocketTransactionHelper, ICategoryServicePort categoryServicePort) {
         this.pocketPersistencePort = pocketPersistencePort;
         this.authenticationPort = authenticationPort;
         this.aiTextClassifierPort = aiTextClassifierPort;
-        this.transactionServicePort = transactionServicePort;
+        this.pocketTransactionHelper = pocketTransactionHelper;
         this.categoryServicePort = categoryServicePort;
     }
 
@@ -86,60 +83,28 @@ public class PocketUseCase implements IPocketServicePort {
     @Override
     public PocketBalanceSummary getBalance(Long pocketId, LocalDate startDate) {
         Long userId = authenticationPort.getAuthenticatedUserId();
-        Pocket pocket = getPocketByIdAndUserId(pocketId);
-        LocalDate today = startDate;
+        getPocketByIdAndUserId(pocketId);
+        LocalDateTime startOfPreviousMonth = startDate.minusMonths(1).withDayOfMonth(1).atStartOfDay();
+        LocalDateTime startOfCurrentMonth = startDate.withDayOfMonth(1).atStartOfDay();
 
-        // Fechas del mes anterior
-        LocalDate startOfPreviousMonth = today.minusMonths(1).withDayOfMonth(1);
-        LocalDate endOfPreviousMonth = today.withDayOfMonth(1).minusDays(1);
+        var previousSummary = pocketTransactionHelper.getMonthlySummary(pocketId, userId, startOfPreviousMonth);
+        var currentSummary = pocketTransactionHelper.getMonthlySummary(pocketId, userId, startOfCurrentMonth);
 
-        // Fechas del mes actual
-        LocalDate startOfCurrentMonth = today.withDayOfMonth(1);
-        LocalDate endOfCurrentMonth = today.withDayOfMonth(today.lengthOfMonth());
+        BigDecimal previousIncome = getAmountFromType(previousSummary, TransactionType.INCOME);
+        BigDecimal previousExpense = getAmountFromType(previousSummary, TransactionType.EXPENSE);
+        BigDecimal previousMonthlyNetChange = previousIncome.subtract(previousExpense);
 
-        // Balance neto del mes anterior (ingresos - gastos)
-        double previousIncome = transactionServicePort.sumByUserAndDateRangeAndType(
-                pocketId,
-                startOfPreviousMonth.atStartOfDay(),
-                endOfPreviousMonth.atTime(LocalTime.MAX),
-                TransactionType.INCOME
-        );
+        BigDecimal currentIncome = getAmountFromType(currentSummary, TransactionType.INCOME);
+        BigDecimal currentExpense = getAmountFromType(currentSummary, TransactionType.EXPENSE);
+        BigDecimal monthlyNetChange = currentIncome.subtract(currentExpense);
 
-        double previousExpense = transactionServicePort.sumByUserAndDateRangeAndType(
-                pocketId,
-                startOfPreviousMonth.atStartOfDay(),
-                endOfPreviousMonth.atTime(LocalTime.MAX),
-                TransactionType.EXPENSE
-        );
+        BigDecimal currentBalance = pocketPersistencePort.getBalance(pocketId, userId);
 
-        double previousMonthlyNetChange = previousIncome - previousExpense;
+        double balanceTrendPercentage = (previousMonthlyNetChange.doubleValue() == 0)
+                ? (currentBalance.doubleValue() != 0 ? 100.0 : 0.0)
+                : ((currentBalance.doubleValue() - previousMonthlyNetChange.doubleValue()) / Math.abs(previousMonthlyNetChange.doubleValue())) * 100;
 
-        // Balance neto del mes actual (ingresos - gastos)
-        double currentIncome = transactionServicePort.sumByUserAndDateRangeAndType(
-                pocketId,
-                startOfCurrentMonth.atStartOfDay(),
-                endOfCurrentMonth.atTime(LocalTime.MAX),
-                TransactionType.INCOME
-        );
-
-        double currentExpense = transactionServicePort.sumByUserAndDateRangeAndType(
-                pocketId,
-                startOfCurrentMonth.atStartOfDay(),
-                endOfCurrentMonth.atTime(LocalTime.MAX),
-                TransactionType.EXPENSE
-        );
-
-        double monthlyNetChange = currentIncome - currentExpense;
-
-        // Saldo actual del bolsillo
-        double currentBalance = pocketPersistencePort.getBalance(pocketId, userId);
-
-        // Cálculo de la tendencia en porcentaje
-        double balanceTrendPercentage = (previousMonthlyNetChange == 0)
-                ? (currentBalance != 0 ? 100.0 : 0.0)
-                : ((currentBalance - previousMonthlyNetChange) / Math.abs(previousMonthlyNetChange)) * 100;
-
-        return new PocketBalanceSummary(currentBalance, monthlyNetChange, previousMonthlyNetChange, balanceTrendPercentage);
+        return new PocketBalanceSummary(currentBalance, monthlyNetChange, previousMonthlyNetChange, BigDecimal.valueOf(balanceTrendPercentage));
     }
 
 
@@ -160,33 +125,17 @@ public class PocketUseCase implements IPocketServicePort {
     @Override
     public boolean isPocketBalanceSufficient(Long pocketId, BigDecimal amount) {
         Long userId = authenticationPort.getAuthenticatedUserId();
-        Double currentBalance = pocketPersistencePort.getBalance(pocketId, userId);
+        BigDecimal currentBalance = pocketPersistencePort.getBalance(pocketId, userId);
 
-        return currentBalance < amount.doubleValue();
+        return currentBalance.doubleValue() < amount.doubleValue();
     }
 
     @Override
     public void transferBetweenPockets(Long fromPocketId, Long toPocketId, BigDecimal amount) {
-        Pocket fromPocket = getPocketByIdAndUserId(fromPocketId);
-        Pocket toPocket = getPocketByIdAndUserId(toPocketId);
+        Long userId = authenticationPort.getAuthenticatedUserId();
         String categoryName = "Transferencia";
         Category category = categoryServicePort.getCategoryByName(categoryName);
-
-        if (fromPocket.getBalance().doubleValue() < amount.doubleValue()) {
-            throw new InsufficientBalanceException(DomainConstants.INSUFFICIENT_BALANCE_MESSAGE);
-        }
-
-        fromPocket.setBalance(fromPocket.getBalance().subtract(amount));
-        toPocket.setBalance(toPocket.getBalance().add(amount));
-
-        pocketPersistencePort.updateBalanceById(fromPocket.getBalance(), fromPocket.getId());
-        pocketPersistencePort.updateBalanceById(toPocket.getBalance(), toPocket.getId());
-
-        Transaction fromTransaction = createNewTransaction(amount, fromPocket, toPocket, category, true);
-        Transaction toTransaction = createNewTransaction(amount, fromPocket, toPocket, category, false);
-
-        transactionServicePort.saveNewTransaction(fromTransaction);
-        transactionServicePort.saveNewTransaction(toTransaction);
+        pocketTransactionHelper.transferBetweenPockets(fromPocketId, toPocketId, amount, userId, category);
     }
 
     @Override
@@ -203,22 +152,24 @@ public class PocketUseCase implements IPocketServicePort {
         pocketPersistencePort.saveNewPocket(existingPocket);
     }
 
-    private static Transaction createNewTransaction(BigDecimal amount, Pocket fromPocket, Pocket toPocket, Category category, boolean isFromPocket) {
-        Transaction transaction = new Transaction();
-        transaction.setPocketId(isFromPocket ? fromPocket.getId() : toPocket.getId());
-        transaction.setToPocketId(isFromPocket ? toPocket.getId() : null);
-        transaction.setAmount(amount);
-        transaction.setTransactionType(isFromPocket ? TransactionType.EXPENSE : TransactionType.INCOME);
-        transaction.setDate(LocalDateTime.now());
-        transaction.setDescription(setDescription(isFromPocket ? toPocket.getName() : fromPocket.getName(), isFromPocket));
-        transaction.setUuid(UUID.randomUUID());
-        transaction.setPeriodicity(Periodicity.ONCE);
-        transaction.setCategoryId(category.getId());
-
-        return transaction;
+    @Override
+    public void updateBalanceById(BigDecimal balance, Long pocketId) {
+        pocketPersistencePort.updateBalanceById(balance, pocketId);
     }
 
-    private static String setDescription(String name, boolean isFromPocket) {
-        return isFromPocket ? "Transferencia a " + name : "Transferencia recibida de " + name;
+    @Override
+    @Scheduled(cron = "0 1 00 1 * ?", zone = "America/Bogota")
+    public void makeTransactionWithPreviousBalance() {
+        Category category = categoryServicePort.getCategory("Ingreso");
+        pocketTransactionHelper.makeTransactionWithPreviousBalance(category.getId());
+    }
+
+    public static BigDecimal getAmountFromType(List<IncomeAndExpenseSummary> previousIncomeAndExpenseValues, TransactionType type) {
+        Optional<IncomeAndExpenseSummary> result = previousIncomeAndExpenseValues.stream()
+                .filter(incomeAndExpenseSummary -> incomeAndExpenseSummary
+                        .type().equals(type.name()))
+                .findFirst();
+
+        return result.isPresent() ? result.get().amount() : BigDecimal.ZERO;
     }
 }

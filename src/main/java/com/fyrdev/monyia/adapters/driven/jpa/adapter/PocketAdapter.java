@@ -36,7 +36,7 @@ public class PocketAdapter implements IPocketPersistencePort {
     }
 
     @Override
-    public Double getBalance(Long pocketId, Long userId) {
+    public BigDecimal getBalance(Long pocketId, Long userId) {
         return pocketRepository
                 .findBalanceById(pocketId, userId);
     }

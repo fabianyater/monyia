@@ -48,6 +48,9 @@ public class TransactionEntity {
     @Column( nullable = false)
     private TransactionType transactionType;
 
+    @Column(nullable = false)
+    private boolean isTransfer;
+
     @ManyToOne
     @JoinColumn(name = "category_entity_id")
     private CategoryEntity categoryEntity;
@@ -60,7 +63,6 @@ public class TransactionEntity {
     @JoinColumn(name = "destination_pocket_entity_id")
     private PocketEntity destinationPocketEntity;
 
-
     @ManyToOne
     @JoinColumn(name = "loan_entity_id")
     private LoanEntity loanEntity;
@@ -68,5 +70,9 @@ public class TransactionEntity {
     @ManyToOne
     @JoinColumn(name = "goal_entity_id")
     private GoalEntity goalEntity;
+
+    @ManyToOne
+    @JoinColumn(name = "budget_entity_id")
+    private BudgetEntity budgetEntity;
 
 }

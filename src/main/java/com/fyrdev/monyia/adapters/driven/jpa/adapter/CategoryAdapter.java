@@ -50,6 +50,15 @@ public class CategoryAdapter implements ICategoryPersistencePort {
     }
 
     @Override
+    public Category getCategory(String name) {
+        return categoryRepository.findByName(name)
+                .stream()
+                .findFirst()
+                .map(categoryEntityMapper::toCategory)
+                .orElse(null);
+    }
+
+    @Override
     public void updateDefaultEmoji(String categoryName, String newEmoji) {
         categoryRepository.updateDefaultEmojiByName(newEmoji, categoryName);
     }

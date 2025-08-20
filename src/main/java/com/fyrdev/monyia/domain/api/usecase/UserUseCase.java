@@ -12,6 +12,7 @@ import com.fyrdev.monyia.domain.util.DomainConstants;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public class UserUseCase implements IUserServicePort {
@@ -60,6 +61,11 @@ public class UserUseCase implements IUserServicePort {
         }
 
         return user;
+    }
+
+    @Override
+    public List<User> getUsers() {
+        return userPersistencePort.getUsers();
     }
 
     private String createRandomHexColor() {
